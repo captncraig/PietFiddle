@@ -5,6 +5,12 @@ import (
 	"strconv"
 )
 
+//This interpreter is written for low complexity at the cost of performance
+//Where possible I use fixed size local frames to simplify memory layout
+//Designed for (relatively) low nesting and branching, and as few dynamic data structures as possible.
+//Intent is a reference implementation that can be ported to piet itself, or other limited platforms
+
+//Global variables. Always present on stack.
 var width int
 var height int
 var size int
@@ -16,6 +22,7 @@ var tries int
 var blockSize int
 
 var program []int
+var st stack
 
 func runProgram(w int, h int, data string) {
 	width = w
@@ -32,7 +39,7 @@ func runProgram(w int, h int, data string) {
 	tries = 0
 	blockSize = 0
 
-	st := stack{make([]int, 1000), 0}
+	st = stack{make([]int, 1000), 0}
 
 	for { //MAIN LOOP
 		if tries > 7 {
@@ -181,6 +188,9 @@ func findExit() {
 	var index int = y*width + x
 	var currentColor int = program[index]
 	var targetColor int
+	//We're gonna' use a second stack. Luckily we don't need to access the
+	//execution stack while this is in scope, so an implementation could
+	//use that if it needed to.
 	st := stack{make([]int, 1000), 0}
 
 	blockSize = 0
