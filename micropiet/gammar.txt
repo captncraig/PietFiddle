@@ -1,0 +1,21 @@
+program := command*
+
+command := integer //push n
+	| p //pop
+	| + | - | * | / | % //arithmetic operators
+	| ! //not
+	| > //greater
+	| d //dup
+	| r //roll
+	| n //inChar
+	| N //inNum
+	| o //outChar
+	| O //outNum
+	| :identifier //label
+	| jmp identifier //jump unconditionally
+	| br identifier identifier //branch. Nonzero/zero labels
+	| sw identifier identifier identifier identifier //4 way switch based on mod4
+	| identifier
+
+integer := [0-9]+
+identifier := [a-zA-Z0-9]+
