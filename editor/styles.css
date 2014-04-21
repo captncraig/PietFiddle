@@ -1,0 +1,75 @@
+.cell {
+  float: left;
+  text-align:center;
+-webkit-touch-callout: none;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+cursor:default;
+}
+.row {
+  clear: both;
+}
+.A {
+  background-color: #FFC0C0;
+}
+.B {
+  background-color: #FF0000;
+}
+.C {
+  background-color: #C00000;
+}
+.D {
+  background-color: #FFFFC0;
+}
+.E {
+  background-color: #FFFF00;
+}
+.F {
+  background-color: #C0C000;
+}
+.G {
+  background-color: #C0FFC0;
+}
+.H {
+  background-color: #00FF00;
+}
+.I {
+  background-color: #00C000;
+}
+.J {
+  background-color: #C0FFFF;
+}
+.K {
+  background-color: #00FFFF;
+}
+.L {
+  background-color: #00C0C0;
+}
+.M {
+  background-color: #C0C0FF;
+}
+.N {
+  background-color: #0000FF;
+}
+.O {
+  background-color: #0000C0;
+}
+.P {
+  background-color: #FFC0FF;
+}
+.Q {
+  background-color: #FF00FF;
+}
+.R {
+  background-color: #C000C0;
+}
+.S {
+  background-color: #FFFFFF;
+}
+.T {
+  background-color: #000000;
+}
+
