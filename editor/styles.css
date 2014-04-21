@@ -9,6 +9,9 @@
 user-select: none;
 cursor:default;
 }
+.program{
+	clear:both;
+}
 .row {
   clear: both;
 }

@@ -1,7 +1,10 @@
-function EditorCtrl($scope) {
-	console.log("ABC")
+angular.module('piet',["monospaced.mousewheel"])
+
+angular.module('piet')
+	.controller('EditorCtrl', function EditorCtrl($scope) {
+	
 	$scope.program = makeProgram(6,4,"ADGJMPBEHKNQCFILORSSSTTT") 
-	$scope.settings = {cellSize:30}
+	$scope.settings = {cellSize:40}
 	$scope.editState = {selectedColor:'Q',painting:false}
 	console.log($scope.program)
 	
@@ -33,7 +36,15 @@ function EditorCtrl($scope) {
 	$scope.mouseUp = function(cell){
 		$scope.editState.painting = false;
 	}
-}
+	$scope.mouseWheel = function(ev, d, dx, dy){
+		var target = $scope.settings.cellSize + 5*dy;
+		if(target < 7)target = 7
+		if(target > 100) target = 100
+		$scope.settings.cellSize = target
+	}
+});
+
+	
 
 function makeProgram(w,h,dat){
 	var program = {rows:[]}

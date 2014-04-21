@@ -1,11 +1,14 @@
-<html ng-app>
+<html ng-app="piet">
 
 <head>
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.5/angular.min.js"></script>
+<script src="hamster.js"></script>
+<script src="mousewheel.js"></script>
 <script src="app.js"></script>
 </head>
 <body ng-controller="EditorCtrl">
+<div class='program' msd-wheel='mouseWheel($event, $delta, $deltaX, $deltaY)'>
 <div ng-repeat='row in program.rows' class='row'>
 <div 
 	ng-repeat='cell in row.cells' 
@@ -18,8 +21,8 @@
 	oncontextmenu="return false;"
 >{{getCellText(cell)}}</div>
 </div>
+</div>
 <br/>
-<input type='numeric' ng-model='settings.cellSize'/>
 
 </body>
 </html>
