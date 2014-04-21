@@ -9,7 +9,25 @@
 user-select: none;
 cursor:default;
 }
+.sidebar{
+	position:fixed;
+	width:200px;
+	height:100%;
+	left:0px;
+	background-color:cyan;
+}
+.selected{
+	width:180px;
+	height:90px;
+}
+.paletteCell{
+	width:60px;
+	height:30px;
+	float:left;
+}
 .program{
+	position:relative;
+	left:230px;
 	clear:both;
 }
 .row {

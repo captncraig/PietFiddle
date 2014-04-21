@@ -2,8 +2,8 @@ angular.module('piet',["monospaced.mousewheel"])
 
 angular.module('piet')
 	.controller('EditorCtrl', function EditorCtrl($scope) {
-	
-	$scope.program = makeProgram(6,4,"ADGJMPBEHKNQCFILORSSSTTT") 
+	$scope.palette = makePalette()
+	$scope.program = makeProgram(6,12,"ADGJMPBEHKNQCFILORSSSTTTADGJMPBEHKNQCFILORSSSTTTADGJMPBEHKNQCFILORSSSTTT") 
 	$scope.settings = {cellSize:40}
 	$scope.editState = {selectedColor:'Q',painting:false}
 	console.log($scope.program)
@@ -42,6 +42,9 @@ angular.module('piet')
 		if(target > 100) target = 100
 		$scope.settings.cellSize = target
 	}
+	$scope.setColor = function(c){
+		$scope.editState.selectedColor = c
+	}
 });
 
 	
@@ -57,4 +60,26 @@ function makeProgram(w,h,dat){
 		program.rows.push(row)
 	}
 	return program
+}
+function makePalette(){
+	return [
+		{color:'A'},
+		{color:'B'},
+		{color:'C'},
+		{color:'D'},
+		{color:'E'},
+		{color:'F'},
+		{color:'G'},
+		{color:'H'},
+		{color:'I'},
+		{color:'J'},
+		{color:'K'},
+		{color:'L'},
+		{color:'M'},
+		{color:'N'},
+		{color:'O'},
+		{color:'P'},
+		{color:'Q'},
+		{color:'R'},
+	]
 }
