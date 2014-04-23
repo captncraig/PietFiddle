@@ -1,22 +1,33 @@
-angular.module('piet',["monospaced.mousewheel"])
+angular.module('piet',[])
 
 angular.module('piet')
 	.controller('EditorCtrl', function EditorCtrl($scope) {
 	$scope.palette = makePalette()
 	$scope.program = makeProgram(30,29,"BBBBBBBBBBBCQQQQQQQRNNNNNNNNNNBBBBBBBBKKKQQQQQQQQRNNNNNNNNNNBBBBBBBBKKQQQQQQQQQRNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBQQQQQQQQQQQQQNNNNNNNNNNNBBBBTBBQQQQQQQQQQQQNNNNNNNNNNNBBBTBTBBQQQQQQQQQQQNNNNNNNNNNNBBTBBBTBQQQQQQQQQQQNNNNNNNNNNNBBBTFTBBBQQQQQQQQQQNNNNNNNNNNNEEEEEBBBBBHHHHHHHHHTMMMMMMMMMNEEEEEHHHHHHHHHHHHHHHHTMMMMMMOOEEEEHHHHHHHHHHHHHHHHMMMMMMMMIIEEEIHHHHHHHHHHHHHHHHMMMMMMMMCMEEEEEEEETHHHHHHHHHHHMMMMMMMMQMEEEEEEEEMLHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHTMMMMMMMMMOOOOOOOOOTTAAAAAAAATAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAEEEEMMMMMOOOOOOOOOBAAAAAAAAAAAEEEENNNNNOOOOOOOOOBAAAAAAAAAAAEEEEHHHHHOOOOOOOOOBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDD") 
-	$scope.settings = {cellSize:40}
+	$scope.settings = {}
 	$scope.editState = {selectedColor:'Q',painting:false}
 	console.log($scope.program)
 	
 	$scope.getCellText = function(cell){
-		return $scope.settings.cellSize > 20? cell.color : ""
+		return ""
 	}
 	$scope.getCellStyle = function(cell){
-		return {
-			height: $scope.settings.cellSize + "px",
-			width: $scope.settings.cellSize + "px",
-			"line-height": $scope.settings.cellSize + "px",
+		obj = {"box-sizing":"border-box"}
+		style = "1px solid black"
+		if(cell.x == 0 || $scope.program.rows[cell.y].cells[cell.x-1].color != cell.color){
+			obj["border-left"] = style
 		}
+		if(cell.x >= ($scope.program.w - 1) || $scope.program.rows[cell.y].cells[cell.x+1].color != cell.color){
+			obj["border-right"] = style
+		}
+		if(cell.y == 0 || $scope.program.rows[cell.y-1].cells[cell.x].color != cell.color){
+			obj["border-top"] = style
+		}
+		if(cell.y >= ($scope.program.h - 1) || $scope.program.rows[cell.y+1].cells[cell.x].color != cell.color){
+			obj["border-bottom"] = style
+		}
+		return obj
+		
 	}
 	$scope.mouseDown = function(cell,ev){
 		if(ev.which == 1){
@@ -35,12 +46,7 @@ angular.module('piet')
 	$scope.mouseUp = function(cell){
 		$scope.editState.painting = false;
 	}
-	$scope.mouseWheel = function(ev, d, dx, dy){
-		var target = $scope.settings.cellSize + 5*dy;
-		if(target < 7)target = 7
-		if(target > 100) target = 100
-		$scope.settings.cellSize = target
-	}
+
 	$scope.setColor = function(c){
 		$scope.editState.selectedColor = c
 	}
@@ -49,12 +55,12 @@ angular.module('piet')
 	
 
 function makeProgram(w,h,dat){
-	var program = {rows:[]}
+	var program = {rows:[],w:w,h:h}
 	for(var y=0; y<h; y++){
 		
 		var row = {cells:[]}
 		for(var x = 0; x<w; x++){
-			row.cells.push({color:dat[x+y*w]})
+			row.cells.push({color:dat[x+y*w],x:x,y:y})
 		}
 		program.rows.push(row)
 	}
@@ -62,24 +68,24 @@ function makeProgram(w,h,dat){
 }
 
 function makePalette(){
-	return [
-		{color:'A'},
-		{color:'B'},
-		{color:'C'},
-		{color:'D'},
-		{color:'E'},
-		{color:'F'},
-		{color:'G'},
-		{color:'H'},
-		{color:'I'},
-		{color:'J'},
-		{color:'K'},
-		{color:'L'},
-		{color:'M'},
-		{color:'N'},
-		{color:'O'},
-		{color:'P'},
-		{color:'Q'},
-		{color:'R'},
-	]
+	return {
+		'A':{color:'A'},
+		'B':{color:'B'},
+		'C':{color:'C'},
+		'D':{color:'D'},
+		'E':{color:'E'},
+		'F':{color:'F'},
+		'G':{color:'G'},
+		'H':{color:'H'},
+		'I':{color:'I'},
+		'J':{color:'J'},
+		'K':{color:'K'},
+		'L':{color:'L'},
+		'M':{color:'M'},
+		'N':{color:'N'},
+		'O':{color:'O'},
+		'P':{color:'P'},
+		'Q':{color:'Q'},
+		'R':{color:'R'},
+	}
 }

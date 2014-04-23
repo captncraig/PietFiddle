@@ -1,5 +1,6 @@
 .cell {
-  float: left;
+  float:left;
+white-space: nowrap;
   text-align:center;
 -webkit-touch-callout: none;
 -webkit-user-select: none;
@@ -11,9 +12,11 @@ cursor:default;
 width:20px;
 height:20px;
 line-height:20px;
+box-sizing:border-box;
+-webkit-box-sizing:border-box;
+-moz-box-sizing: border-box;
 }
 .sidebar{
-	position:fixed;
 	width:200px;
 	height:100%;
 	left:0px;
@@ -29,12 +32,19 @@ line-height:20px;
 	float:left;
 }
 .program{
-	position:relative;
+	position:absolute;
 	left:230px;
+	top: 0px;
 	clear:both;
 }
 .row {
-  clear: both;
+	white-space: nowrap;
+	box-sizing:border-box;
+-webkit-box-sizing:border-box;
+-moz-box-sizing: border-box;
+}
+body{
+	overflow:scroll;
 }
 .A {
   background-color: #FFC0C0;
