@@ -48,7 +48,7 @@ func LoadImage(url string, codelSize int) (width int, height int, data string) {
 	}
 	width /= codelSize
 	height /= codelSize
-
+	fmt.Println(width, height)
 	b := make([]byte, width*height)
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
