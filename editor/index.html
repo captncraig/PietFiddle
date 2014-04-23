@@ -11,6 +11,9 @@
 		<div class='selected' ng-class='editState.selectedColor'></div>
 		<div ng-repeat='p in palette' class='paletteCell cell' ng-class='p.color' ng-click='setColor(p.color)'>{{p.color}}</div>
 	</div>
+	<div class='info'>
+current block size: {{hover.size}}
+</div>
 </div>
 <div class='program' >
 <div ng-repeat='row in program.rows' class='row'>

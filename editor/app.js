@@ -6,6 +6,7 @@ angular.module('piet')
 	$scope.program = makeProgram(30,29,"BBBBBBBBBBBCQQQQQQQRNNNNNNNNNNBBBBBBBBKKKQQQQQQQQRNNNNNNNNNNBBBBBBBBKKQQQQQQQQQRNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBQQQQQQQQQQQQQNNNNNNNNNNNBBBBTBBQQQQQQQQQQQQNNNNNNNNNNNBBBTBTBBQQQQQQQQQQQNNNNNNNNNNNBBTBBBTBQQQQQQQQQQQNNNNNNNNNNNBBBTFTBBBQQQQQQQQQQNNNNNNNNNNNEEEEEBBBBBHHHHHHHHHTMMMMMMMMMNEEEEEHHHHHHHHHHHHHHHHTMMMMMMOOEEEEHHHHHHHHHHHHHHHHMMMMMMMMIIEEEIHHHHHHHHHHHHHHHHMMMMMMMMCMEEEEEEEETHHHHHHHHHHHMMMMMMMMQMEEEEEEEEMLHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHTMMMMMMMMMOOOOOOOOOTTAAAAAAAATAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAEEEEMMMMMOOOOOOOOOBAAAAAAAAAAAEEEENNNNNOOOOOOOOOBAAAAAAAAAAAEEEEHHHHHOOOOOOOOOBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDD") 
 	$scope.settings = {}
 	$scope.editState = {selectedColor:'Q',painting:false}
+	$scope.hover = {size:0}
 	console.log($scope.program)
 	
 	$scope.getCellText = function(cell){
@@ -33,6 +34,7 @@ angular.module('piet')
 		if(ev.which == 1){
 			cell.color = $scope.editState.selectedColor
 			$scope.editState.painting = true
+			$scope.hover.size = floodFill(cell,$scope.program)
 		}
 		else if(ev.which == 3){
 			$scope.editState.selectedColor = cell.color
@@ -42,6 +44,7 @@ angular.module('piet')
 		if($scope.editState.painting){
 			cell.color = $scope.editState.selectedColor
 		}
+		$scope.hover.size = floodFill(cell,$scope.program)
 	}
 	$scope.mouseUp = function(cell){
 		$scope.editState.painting = false;
@@ -52,7 +55,24 @@ angular.module('piet')
 	}
 });
 
-	
+var mark = 0;
+function floodFill(cell,program){
+	mark++
+	var count = 0
+	var stack = [cell]
+	while(stack.length){
+		var target = stack.pop()
+		if(target.mark == mark || target.color != cell.color) continue;
+		//not marked, color match
+		target.mark = mark
+		count++
+		if(target.x > 0) stack.push(program.rows[target.y].cells[target.x-1])
+		if(target.x < program.w - 1) stack.push(program.rows[target.y].cells[target.x+1])
+		if(target.y > 0) stack.push(program.rows[target.y-1].cells[target.x])
+		if(target.y < program.h - 1) stack.push(program.rows[target.y+1].cells[target.x])
+	}
+	return count
+}
 
 function makeProgram(w,h,dat){
 	var program = {rows:[],w:w,h:h}
@@ -60,7 +80,7 @@ function makeProgram(w,h,dat){
 		
 		var row = {cells:[]}
 		for(var x = 0; x<w; x++){
-			row.cells.push({color:dat[x+y*w],x:x,y:y})
+			row.cells.push({color:dat[x+y*w],x:x,y:y,mark:0})
 		}
 		program.rows.push(row)
 	}
