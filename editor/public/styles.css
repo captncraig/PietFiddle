@@ -31,6 +31,12 @@ box-sizing:border-box;
 	height:30px;
 	float:left;
 }
+.palette{
+	clear:both;
+}
+.info{
+	clear:both;
+}
 .program{
 	position:absolute;
 	left:230px;

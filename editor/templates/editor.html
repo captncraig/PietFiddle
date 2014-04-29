@@ -2,18 +2,33 @@
 
 <head>
 <link rel="stylesheet" type="text/css" href="styles.css" />
+<script type='text/javascript'>
+	var imgurData = {username:"{[{.Username}]}",url:"{[{.RegisterUrl}]}"}
+</script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.5/angular.min.js"></script>
 <script src="app.js"></script>
+
 </head>
 <body ng-controller="EditorCtrl" ng-keypress='keypress($event)'>
 <div class='sidebar'>
 	<div class='palette'>
 		<div class='selected' ng-class='editState.selectedColor'></div>
 		<div ng-repeat='p in palette' class='paletteCell cell' ng-class='p.color' ng-click='setColor(p.color)'>{{p.color}}</div>
+		<div class='paletteCell cell S'  ng-click='setColor("S")'>S</div>
+		<div class='paletteCell cell T'  ng-click='setColor("T")'>T</div>
 	</div>
+	
 	<div class='info'>
 current block size: {{hover.size}}
 </div>
+	<div class='imgur' ng-show='imgur.username'>
+		Imgur account: {{imgur.username}}
+	</div>
+	<div class='imgurLink' ng-hide='imgur.username'>
+		<a target='ahsfkhaf' ng-href='{{imgur.url}}'>Login to imgur account</a>
+		<br/>Pin:<input type='text' ng-model='imgur.pin'/>
+		<br/><input type='button' value='submit' ng-click='submitPin()'></input>
+	</div>
 </div>
 <div class='program'  >
 <div ng-repeat='row in program.rows' class='row'>
@@ -31,6 +46,5 @@ current block size: {{hover.size}}
 </div>
 </div>
 <br/>
-
 </body>
 </html>

@@ -1,12 +1,13 @@
 angular.module('piet',[])
 
 angular.module('piet')
-	.controller('EditorCtrl', function EditorCtrl($scope) {
+	.controller('EditorCtrl', function EditorCtrl($scope,$http) {
 	$scope.palette = makePalette()
-	$scope.program = makeProgram(30,29,"BBBBBBBBBBBCQQQQQQQRNNNNNNNNNNBBBBBBBBKKKQQQQQQQQRNNNNNNNNNNBBBBBBBBKKQQQQQQQQQRNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBQQQQQQQQQQQQQNNNNNNNNNNNBBBBTBBQQQQQQQQQQQQNNNNNNNNNNNBBBTBTBBQQQQQQQQQQQNNNNNNNNNNNBBTBBBTBQQQQQQQQQQQNNNNNNNNNNNBBBTFTBBBQQQQQQQQQQNNNNNNNNNNNEEEEEBBBBBHHHHHHHHHTMMMMMMMMMNEEEEEHHHHHHHHHHHHHHHHTMMMMMMOOEEEEHHHHHHHHHHHHHHHHMMMMMMMMIIEEEIHHHHHHHHHHHHHHHHMMMMMMMMCMEEEEEEEETHHHHHHHHHHHMMMMMMMMQMEEEEEEEEMLHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHTMMMMMMMMMOOOOOOOOOTTAAAAAAAATAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAEEEEMMMMMOOOOOOOOOBAAAAAAAAAAAEEEENNNNNOOOOOOOOOBAAAAAAAAAAAEEEEHHHHHOOOOOOOOOBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDD") 
+	$scope.program = makeProgram(10,10,null) 
 	$scope.settings = {}
 	$scope.editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
 	$scope.hover = {size:0}
+	$scope.imgur = imgurData
 	console.log($scope.program)
 	
 	$scope.getCellText = function(cell){
@@ -86,6 +87,11 @@ angular.module('piet')
 	$scope.setColor = function(c){
 		$scope.editState.selectedColor = c
 	}
+	$scope.submitPin = function(){
+		if(!$scope.imgur.pin) return;
+		$http.get('/pin/'+$scope.imgur.pin)
+		
+	}
 });
 
 var mark = 0;
@@ -112,10 +118,11 @@ function floodFill(cell,program,set){
 function makeProgram(w,h,dat){
 	var program = {rows:[],w:w,h:h}
 	for(var y=0; y<h; y++){
-		
 		var row = {cells:[]}
 		for(var x = 0; x<w; x++){
-			row.cells.push({color:dat[x+y*w],x:x,y:y,mark:0})
+			c = "S"
+			if(dat) c = dat[x+y*w]
+			row.cells.push({color:c,x:x,y:y,mark:0})
 		}
 		program.rows.push(row)
 	}
