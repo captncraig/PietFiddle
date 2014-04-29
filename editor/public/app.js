@@ -31,11 +31,15 @@ angular.module('piet')
 		
 	}
 	$scope.mouseDown = function(cell,ev){
+		//left click
 		if(ev.which == 1){
+			//right held down. Flood fill.
 			if($scope.editState.rightDown){
 				$scope.editState.filled = true;
 				$scope.hover.size = floodFill(cell,$scope.program,$scope.editState.selectedColor)
+				$scope.hover.size = floodFill(cell,$scope.program)
 			}
+			//regular click. start painting
 			else{
 				cell.color = $scope.editState.selectedColor
 				$scope.editState.painting = true
@@ -62,7 +66,23 @@ angular.module('piet')
 			$scope.editState.filled = false;
 		}
 	}
-
+	keys = [110,112,94,43,45,42,47,37,33,62,60,115,100,114,105,73,111,79]
+	$scope.keypress = function(ev){
+		console.log(ev.keyCode, ev.keyIdentifier)
+		idx = keys.indexOf(ev.keyCode)
+		if(idx != -1)
+			$scope.editState.selectedColor = $scope.rotate($scope.editState.selectedColor,Math.floor(idx / 3),idx%3)
+		
+		
+	}
+	$scope.rotate = function(src,hue,light){
+		x="ABCDEFGHIJKLMNOPQRST"
+		idx = x.indexOf(src)
+		light = ((idx % 3) + light) % 3
+		hue = (Math.floor(idx / 3) + hue) % 6
+		console.log(hue,light)
+		return x[hue*3 + light]
+	}
 	$scope.setColor = function(c){
 		$scope.editState.selectedColor = c
 	}
