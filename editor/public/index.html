@@ -24,7 +24,7 @@ current block size: {{hover.size}}
 	ng-style='getCellStyle(cell)'
 	ng-mousedown='mouseDown(cell,$event)'
 	ng-mouseenter='mouseEnter(cell)'
-	ng-mouseup='mouseUp(cell)'
+	ng-mouseup='mouseUp(cell,$event)'
 	oncontextmenu="return false;"
 >{{getCellText(cell)}}</div>
 </div>

@@ -5,7 +5,7 @@ angular.module('piet')
 	$scope.palette = makePalette()
 	$scope.program = makeProgram(30,29,"BBBBBBBBBBBCQQQQQQQRNNNNNNNNNNBBBBBBBBKKKQQQQQQQQRNNNNNNNNNNBBBBBBBBKKQQQQQQQQQRNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBBKKQQQQQQQQQQNNNNNNNNNNNBBBBBBQQQQQQQQQQQQQNNNNNNNNNNNBBBBTBBQQQQQQQQQQQQNNNNNNNNNNNBBBTBTBBQQQQQQQQQQQNNNNNNNNNNNBBTBBBTBQQQQQQQQQQQNNNNNNNNNNNBBBTFTBBBQQQQQQQQQQNNNNNNNNNNNEEEEEBBBBBHHHHHHHHHTMMMMMMMMMNEEEEEHHHHHHHHHHHHHHHHTMMMMMMOOEEEEHHHHHHHHHHHHHHHHMMMMMMMMIIEEEIHHHHHHHHHHHHHHHHMMMMMMMMCMEEEEEEEETHHHHHHHHHHHMMMMMMMMQMEEEEEEEEMLHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHMMMMMMMMMMOOOOOOOOOHHHHHHHHHHHTMMMMMMMMMOOOOOOOOOTTAAAAAAAATAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAMMMMMMMMMOOOOOOOOOBAAAAAAAAAAAEEEEMMMMMOOOOOOOOOBAAAAAAAAAAAEEEENNNNNOOOOOOOOOBAAAAAAAAAAAEEEEHHHHHOOOOOOOOOBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDDOOOOOOOOPBAAAAAAAAAAAEDDDDDDDD") 
 	$scope.settings = {}
-	$scope.editState = {selectedColor:'Q',painting:false}
+	$scope.editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
 	$scope.hover = {size:0}
 	console.log($scope.program)
 	
@@ -32,12 +32,19 @@ angular.module('piet')
 	}
 	$scope.mouseDown = function(cell,ev){
 		if(ev.which == 1){
-			cell.color = $scope.editState.selectedColor
-			$scope.editState.painting = true
-			$scope.hover.size = floodFill(cell,$scope.program)
+			if($scope.editState.rightDown){
+				$scope.editState.filled = true;
+				$scope.hover.size = floodFill(cell,$scope.program,$scope.editState.selectedColor)
+			}
+			else{
+				cell.color = $scope.editState.selectedColor
+				$scope.editState.painting = true
+				$scope.hover.size = floodFill(cell,$scope.program)
+			}
 		}
 		else if(ev.which == 3){
-			$scope.editState.selectedColor = cell.color
+			$scope.editState.filled = false;
+			$scope.editState.rightDown = true;
 		}
 	}
 	$scope.mouseEnter = function(cell){
@@ -46,8 +53,14 @@ angular.module('piet')
 		}
 		$scope.hover.size = floodFill(cell,$scope.program)
 	}
-	$scope.mouseUp = function(cell){
+	$scope.mouseUp = function(cell,ev){
 		$scope.editState.painting = false;
+		if(ev.which == 3){
+			$scope.editState.rightDown = false;
+			if (!$scope.editState.filled)
+				$scope.editState.selectedColor = cell.color;
+			$scope.editState.filled = false;
+		}
 	}
 
 	$scope.setColor = function(c){
@@ -56,15 +69,17 @@ angular.module('piet')
 });
 
 var mark = 0;
-function floodFill(cell,program){
+function floodFill(cell,program,set){
 	mark++
 	var count = 0
 	var stack = [cell]
+	var targetColor = cell.color;
 	while(stack.length){
 		var target = stack.pop()
-		if(target.mark == mark || target.color != cell.color) continue;
+		if(target.mark == mark || target.color != targetColor) continue;
 		//not marked, color match
 		target.mark = mark
+		if(set) target.color = set
 		count++
 		if(target.x > 0) stack.push(program.rows[target.y].cells[target.x-1])
 		if(target.x < program.w - 1) stack.push(program.rows[target.y].cells[target.x+1])
