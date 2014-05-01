@@ -18,34 +18,36 @@ func main() {
 
 func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render) {
 	data := NewBrowserData()
-	cookie, _ := r.Cookie("SSID")
-	fmt.Println(cookie.Value)
-	session := AllSessions[cookie.Value]
-	fmt.Println(session)
-	fmt.Println(AllSessions)
-
-	if session != nil {
-		fmt.Println(session.Username)
-		data.Username = session.Username
+	cookie, _ := r.Cookie("Session_Id")
+	if cookie != nil {
+		fmt.Printf("Cookie value:%s\n", cookie.Value)
+		uname := UserNames[cookie.Value]
+		fmt.Printf("Username:%s\n", uname)
+		if uname != "" {
+			data.Username = uname
+		}
 	}
-	ren.HTML(200, "editor", NewBrowserData())
+	ren.HTML(200, "editor", data)
 }
 
 func handlePinAuth(w http.ResponseWriter, params martini.Params) {
 	pin := params["pin"]
-	sessionId, err := ExchangePinForToken(pin)
+	tok, err := ExchangePinForToken(pin)
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		return
-	} else {
-		cookie := &http.Cookie{}
-		cookie.Name = "SSID"
-		cookie.Secure = false
-		cookie.Expires = time.Now().AddDate(5, 0, 0)
-		cookie.Value = sessionId
-		cookie.Domain = "127.0.0.1"
-		cookie.Path = "/"
-		http.SetCookie(w, cookie)
 	}
+	tok, err = RefreshToken(tok)
+	if err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	}
+	sid := NewSession(tok)
+	cookie := &http.Cookie{}
+	cookie.Name = "Session_Id"
+	cookie.Expires = time.Now().AddDate(5, 0, 0)
+	cookie.Value = sid
+	cookie.Path = "/"
+	http.SetCookie(w, cookie)
 
 }

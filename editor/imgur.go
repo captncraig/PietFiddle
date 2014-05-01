@@ -2,28 +2,18 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
-	"math/rand"
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 )
-
-type ImgurSession struct {
-	Username     string
-	accessToken  string
-	refreshToken string
-	expires      time.Time
-}
 
 type ImgurBrowserData struct {
 	RegisterUrl string
 	Username    string
 }
-
-var AllSessions map[string]*ImgurSession = map[string]*ImgurSession{}
 
 type ImgurCredentials struct {
 	AccessToken     string      `json:"access_token"`
@@ -38,40 +28,41 @@ var client_id string = os.Getenv("imgur_client_id")
 var client_secret string = os.Getenv("imgur_client_secret")
 var registerUrl string = fmt.Sprintf("https://api.imgur.com/oauth2/authorize?client_id=%s&response_type=pin", client_id)
 var tokenUrl string = "https://api.imgur.com/oauth2/token"
+var accountUrl string = "https://api.imgur.com/3/account/me"
 
 func NewBrowserData() *ImgurBrowserData {
 	return &ImgurBrowserData{registerUrl, ""}
 }
 
-func ExchangePinForToken(pin string) (string, error) {
+func ExchangePinForToken(pin string) (*ImgurCredentials, error) {
 	resp, err := http.PostForm(tokenUrl,
 		url.Values{"client_id": {client_id}, "client_secret": {client_secret},
 			"pin": {pin}, "grant_type": {"pin"}})
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+	return parseTokenResponse(resp)
+}
+
+func RefreshToken(tok *ImgurCredentials) (*ImgurCredentials, error) {
+	resp, err := http.PostForm(tokenUrl,
+		url.Values{"client_id": {client_id}, "client_secret": {client_secret},
+			"refresh_token": {tok.RefreshToken}, "grant_type": {"refresh_token"}})
+	if err != nil {
+		return nil, err
+	}
+	return parseTokenResponse(resp)
+}
+
+func parseTokenResponse(resp *http.Response) (*ImgurCredentials, error) {
 	if resp.StatusCode != 200 {
 		fmt.Println(resp.StatusCode)
-		return "", nil
+		return nil, errors.New("Bad pin response from imgur")
 	}
-	defer resp.Close()
+	defer resp.Body.Close()
 	body, _ := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(body))
 	credentials := &ImgurCredentials{}
-	json.Unmarshal(body, credentials)
-	id := generateSessionId()
-	fmt.Println(credentials.AccountUsername)
-	AllSessions[id] = &ImgurSession{credentials.AccountUsername,
-		credentials.AccessToken, credentials.RefreshToken,
-		time.Now().Add(time.Duration(credentials.ExpiresIn) * time.Second)}
-	return id, nil
-}
-
-func generateSessionId() string {
-	alphabet := "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	var bytes = make([]byte, 20, 20)
-	for i := 0; i < 20; i++ {
-		bytes[i] = alphabet[rand.Intn(len(alphabet))]
-	}
-	return string(bytes)
+	err := json.Unmarshal(body, credentials)
+	return credentials, err
 }
