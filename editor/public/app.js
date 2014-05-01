@@ -73,8 +73,9 @@ angular.module('piet')
 		idx = keys.indexOf(ev.keyCode)
 		if(idx != -1)
 			$scope.editState.selectedColor = $scope.rotate($scope.editState.selectedColor,Math.floor(idx / 3),idx%3)
-		
-		
+		else if(ev.keyCode == 125){ // } key to cycle colors for whole program
+			rotateColors($scope.program)
+		}
 	}
 	$scope.rotate = function(src,hue,light){
 		x="ABCDEFGHIJKLMNOPQRST"
@@ -113,6 +114,19 @@ function floodFill(cell,program,set){
 		if(target.y < program.h - 1) stack.push(program.rows[target.y+1].cells[target.x])
 	}
 	return count
+}
+
+function rotateColors(program){
+	letters = "ABCDEFGHIJKLMNOPQR"
+	for(var y=0; y<program.h; y++){
+		for(var x = 0; x<program.w; x++){
+			cell = program.rows[y].cells[x]
+			idx = letters.indexOf(cell.color)
+			if(idx != -1){
+				cell.color = letters[(idx+1) % 18]
+			}
+		}
+	}
 }
 
 function makeProgram(w,h,dat){
