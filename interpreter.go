@@ -81,7 +81,7 @@ func runProgram(w int, h int, data string) {
 		if op == 11 {
 			fmt.Println("SWT")
 		}
-		if op == 12 {
+		if op == 12 { //DUP
 			v := st.pop()
 			st.push(v)
 			st.push(v)

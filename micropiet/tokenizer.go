@@ -17,6 +17,7 @@ func (t *Token) String() string {
 	return fmt.Sprintf("%s(%s)", t.Type, t.Data)
 }
 
+//go:generate stringer -type=TokenType
 type TokenType byte
 
 const (
