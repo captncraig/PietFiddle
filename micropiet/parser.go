@@ -16,24 +16,27 @@ func Parse(text string) (*Program, error) {
 	macros := make(map[string][]*Token)
 	var currentToken *Token
 	//Parse macros
-	for currentToken = <-tokens; currentToken.Type == "Hash"; currentToken = <-tokens {
-		name := Expect("Identifier", tokens).Data
-		Expect("LCurl", tokens)
+	for currentToken = <-tokens; currentToken.Type == TT_HASH; currentToken = <-tokens {
+		name := Expect(TT_IDENTIFIER, tokens).Data
+		Expect(TT_LCURL, tokens)
 		macro := make([]*Token, 0)
-		for t := <-tokens; t.Type != "RCurl"; t = <-tokens {
+		for t := <-tokens; t.Type != TT_RCURL; t = <-tokens {
+			if t.Type == TT_LCURL || t.Type == TT_HASH {
+
+			}
 			macro = append(macro, t)
 		}
 		macros[name] = macro
 	}
-	fmt.Println("MAcros done")
-	for ; currentToken.Type != "EOF"; currentToken = <-tokens {
-		fmt.Printf("B%s\n", currentToken.Type)
+	fmt.Println("Macros done")
+	for ; currentToken.Type != TT_EOF; currentToken = <-tokens {
+		fmt.Printf("%s\n", currentToken.Type)
 	}
 	fmt.Println(macros)
 	return nil, nil
 }
 
-func Expect(typ string, tokens <-chan *Token) *Token {
+func Expect(typ TokenType, tokens <-chan *Token) *Token {
 	t := <-tokens
 	if t.Type != typ {
 		panic("Unexpected token")

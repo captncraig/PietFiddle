@@ -1,4 +1,6 @@
-program := command*
+program := 
+macroDefinition*
+command*
 
 command := integer //push n
 	| p //pop
@@ -15,7 +17,9 @@ command := integer //push n
 	| jmp identifier //jump unconditionally
 	| br identifier identifier //branch. Nonzero/zero labels
 	| sw identifier identifier identifier identifier //4 way switch based on mod4
-	| identifier
+	| identifier //macro expansion
 
 integer := [0-9]+
 identifier := [a-zA-Z0-9]+
+
+macro := #{command*} //labels inside macro will be duplicated on each expansion

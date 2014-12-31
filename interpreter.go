@@ -188,6 +188,7 @@ func findExit() {
 	var index int = y*width + x
 	var currentColor int = program[index]
 	var targetColor int
+	var stackSize = 1
 	//We're gonna' use a second stack. Luckily we don't need to access the
 	//execution stack while this is in scope, so an implementation could
 	//use that if it needed to.
@@ -195,8 +196,9 @@ func findExit() {
 
 	blockSize = 0
 	st.push(index)
-	for st.size > 0 {
+	for stacksize > 0 {
 		index = st.pop()
+		stacksize--
 		targetColor = program[index]
 		if targetColor == 50 {
 			continue

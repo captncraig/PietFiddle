@@ -1,5 +1,6 @@
 package main
 
+//TODO: Auto expand
 type stack struct {
 	arr  []int
 	size int

@@ -6,11 +6,14 @@
 }
 
 //read width and height, calculate size
-IdId 
+print "width:"
+Id
+print "height:"
+Id
+//hhww
 3 moveUp 
 *
 d
-
 //remaining size h w
 
 :readProgram
