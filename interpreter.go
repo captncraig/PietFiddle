@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/captncraig/gpiet/machine"
 	"strconv"
 )
 
@@ -196,9 +197,9 @@ func findExit() {
 
 	blockSize = 0
 	st.push(index)
-	for stacksize > 0 {
+	for stackSize > 0 {
 		index = st.pop()
-		stacksize--
+		stackSize--
 		targetColor = program[index]
 		if targetColor == 50 {
 			continue
