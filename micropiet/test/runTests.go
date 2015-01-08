@@ -22,12 +22,12 @@ func main() {
 		}
 		runTest(f.Name())
 	}
+	fmt.Println("--------------")
 }
 
 func runTest(name string) {
 	fmt.Println("--------------")
-	fmt.Println(name)
-	fmt.Println("--------------")
+	fmt.Print(name, "...  ")
 
 	vm := machine.NewMachine()
 
@@ -35,6 +35,12 @@ func runTest(name string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer func() {
+		x := recover()
+		if x != nil {
+			log.Fatalln("TEST FAILED: ", x)
+		}
+	}()
 	scanner := bufio.NewScanner(file)
 	text := ""
 	for scanner.Scan() {
@@ -45,9 +51,23 @@ func runTest(name string) {
 				log.Fatalln(err)
 			}
 			prog.Run(vm)
+			compareStacks(vm.GetStack(), line[3:])
 			text = ""
 		} else {
 			text = text + line + "\n"
 		}
+	}
+	fmt.Println("PASS")
+}
+
+func compareStacks(stack []int64, expected string) {
+	actual := fmt.Sprint(stack)
+	actual = strings.Trim(actual, "[] ")
+	expected = strings.TrimSpace(expected)
+	if actual != expected {
+		fmt.Println("\nStack doesn't match!!!")
+		fmt.Println("Expected: ", expected)
+		fmt.Println("Actual: ", actual)
+		log.Fatalln("TEST FAILED")
 	}
 }

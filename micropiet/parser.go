@@ -1,18 +1,5 @@
 package micropiet
 
-import (
-	"github.com/captncraig/gpiet/machine"
-)
-
-type Program struct {
-	startCommand *Command
-}
-
-func (p *Program) Run(vm *machine.PietMachine) {}
-
-type Command struct {
-}
-
 type parser struct {
 	toks <-chan *Token
 }
@@ -28,6 +15,7 @@ func (p *parser) expect(typ TokenType) *Token {
 	}
 	return t
 }
+
 func Parse(text string) (*Program, error) {
 	tokens := make(chan *Token)
 	go Tokenize(text, tokens)
@@ -47,8 +35,18 @@ func Parse(text string) (*Program, error) {
 		}
 		macros[name] = macro
 	}
+	prog := NewProgram()
 	for ; currentToken.Type != TT_EOF; currentToken = <-tokens {
-		//fmt.Printf("%s\n", currentToken.Type)
+		switch currentToken.Type {
+		case TT_INTEGER:
+			prog.AddCommand(NewPushCommand(currentToken.Data))
+		case TT_ADD:
+			fallthrough
+		case TT_SUB:
+			prog.AddCommand(NewArithmeticCommand(currentToken.Data))
+		default:
+			panic("Unexpected token received: " + currentToken.Type.String())
+		}
 	}
-	return nil, nil
+	return prog, nil
 }
