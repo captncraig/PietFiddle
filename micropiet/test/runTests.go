@@ -36,10 +36,10 @@ func runTest(name string) {
 		log.Fatalln(err)
 	}
 	defer func() {
-		x := recover()
-		if x != nil {
-			log.Fatalln("TEST FAILED: ", x)
-		}
+		//x := recover()
+		//if x != nil {
+		//	log.Fatalln("TEST FAILED: ", x)
+		//}
 	}()
 	scanner := bufio.NewScanner(file)
 	text := ""
@@ -51,7 +51,7 @@ func runTest(name string) {
 				log.Fatalln(err)
 			}
 			prog.Run(vm)
-			compareStacks(vm.GetStack(), line[3:])
+			compareStacks(vm.GetStack(), line[2:])
 			text = ""
 		} else {
 			text = text + line + "\n"

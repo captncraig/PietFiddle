@@ -64,7 +64,7 @@ func buildTokenMap() []tokenDef {
 		tokenDef{regexp.MustCompile("^\\s+"), TT_WHITESPACE},
 		tokenDef{regexp.MustCompile("^//.*$"), TT_COMMENT},
 		tokenDef{regexp.MustCompile("^[0-9]+"), TT_INTEGER},
-		tokenDef{regexp.MustCompile("^p"), TT_POP},
+		tokenDef{regexp.MustCompile("^pop"), TT_POP},
 		tokenDef{regexp.MustCompile("^\\+"), TT_ADD},
 		tokenDef{regexp.MustCompile("^-"), TT_SUB},
 		tokenDef{regexp.MustCompile("^/"), TT_DIV},

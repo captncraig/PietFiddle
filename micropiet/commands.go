@@ -23,3 +23,10 @@ func NewArithmeticCommand(op string) *Command {
 			return ""
 		}}
 }
+func NewPopCommand() *Command {
+	return &Command{
+		action: func(vm *machine.PietMachine) string {
+			vm.Pop()
+			return ""
+		}}
+}
