@@ -42,6 +42,14 @@ func Parse(text string) (*Program, error) {
 			prog.AddCommand(NewPushCommand(currentToken.Data))
 		case TT_ADD:
 			fallthrough
+		case TT_MUL:
+			fallthrough
+		case TT_DIV:
+			fallthrough
+		case TT_MOD:
+			fallthrough
+		case TT_GT:
+			fallthrough
 		case TT_SUB:
 			prog.AddCommand(NewArithmeticCommand(currentToken.Data))
 		default:

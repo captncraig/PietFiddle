@@ -44,6 +44,26 @@ func (p *PietMachine) Binary(op string) {
 		p.stack.push(b + a)
 	case "-":
 		p.stack.push(b - a)
+	case "*":
+		p.stack.push(b * a)
+	case "/":
+		if a == 0 {
+			p.stack.push(99999999)
+			//this is what npiet does. The spec recommends ignoring:
+			//p.stack.push(b)
+			//p.stack.push(a)
+			//TODO: make these a configuration option?
+		} else {
+			p.stack.push(b / a)
+		}
+	case "%":
+		p.stack.push(b % a)
+	case ">":
+		if b > a {
+			p.stack.push(1)
+		} else {
+			p.stack.push(0)
+		}
 	default:
 		panic("unknown op: " + op)
 	}
