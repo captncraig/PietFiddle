@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/captncraig/gpiet/machine"
-	"github.com/captncraig/gpiet/micropiet"
+	"github.com/captncraig/pietfiddle/machine"
+	"github.com/captncraig/pietfiddle/micropiet"
 	"io/ioutil"
 	"log"
 	"os"

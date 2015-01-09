@@ -1,7 +1,7 @@
 package micropiet
 
 import (
-	"github.com/captncraig/gpiet/machine"
+	"github.com/captncraig/pietfiddle/machine"
 )
 
 type Program struct {
