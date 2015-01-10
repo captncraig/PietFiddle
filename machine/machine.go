@@ -42,6 +42,25 @@ func (p *PietMachine) Pop() {
 	}
 }
 
+func (p *PietMachine) Not() {
+	if p.stack.size > 0 {
+		val := p.stack.pop()
+		if val == 0 {
+			p.Push(1)
+		} else {
+			p.Push(0)
+		}
+	}
+}
+
+func (p *PietMachine) Dup() {
+	if p.stack.size > 0 {
+		val := p.stack.pop()
+		p.Push(val)
+		p.Push(val)
+	}
+}
+
 func (p *PietMachine) Binary(op string) {
 	if p.stack.size < 2 {
 		return

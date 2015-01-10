@@ -54,6 +54,10 @@ func Parse(text string) (*Program, error) {
 			prog.AddCommand(NewArithmeticCommand(currentToken.Data))
 		case TT_POP:
 			prog.AddCommand(NewPopCommand())
+		case TT_NOT:
+			prog.AddCommand(NewNotCommand())
+		case TT_DUP:
+			prog.AddCommand(NewDupCommand())
 		default:
 			panic("Unexpected token received: " + currentToken.Type.String())
 		}

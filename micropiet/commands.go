@@ -30,3 +30,18 @@ func NewPopCommand() *Command {
 			return ""
 		}}
 }
+func NewNotCommand() *Command {
+	return &Command{
+		action: func(vm *machine.PietMachine) string {
+			vm.Not()
+			return ""
+		}}
+}
+
+func NewDupCommand() *Command {
+	return &Command{
+		action: func(vm *machine.PietMachine) string {
+			vm.Dup()
+			return ""
+		}}
+}
