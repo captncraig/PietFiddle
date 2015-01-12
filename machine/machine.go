@@ -1,50 +1,76 @@
 package machine
 
-import ()
-
 type PietMachine struct {
-	stack stack
+	arr  []int64
+	size int
 }
 
 func NewMachine() *PietMachine {
 	return &PietMachine{
-		stack: stack{
-			arr:  make([]int64, 1000, 1000),
-			size: 0,
-		},
+		arr:  make([]int64, 1000, 1000),
+		size: 0,
 	}
 }
 
-type Int64Slice []int64
-
-func (p Int64Slice) Len() int           { return len(p) }
-func (p Int64Slice) Less(i, j int) bool { return p[i] < p[j] }
-func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-
 func (p *PietMachine) GetStack() []int64 {
-	if p.stack.size == 0 {
+	if p.size == 0 {
 		return []int64{}
 	}
-	x := make([]int64, p.stack.size)
-	for i := 0; i < p.stack.size; i++ {
-		x[i] = p.stack.arr[p.stack.size-1-i]
+	x := make([]int64, p.size)
+	for i := 0; i < p.size; i++ {
+		x[i] = p.arr[p.size-1-i]
 	}
 	return x
 }
 
 func (p *PietMachine) Push(val int64) {
-	p.stack.push(val)
+	p.arr[p.size] = val
+	p.size++
 }
 
 func (p *PietMachine) Pop() {
-	if p.stack.size > 0 {
-		p.stack.pop()
+	if p.size > 0 {
+		p.size--
+	}
+}
+
+func (p *PietMachine) pop() int64 {
+	if p.size > 0 {
+		p.size--
+		return p.arr[p.size]
+	}
+	panic("unchecked pop")
+}
+
+func (p *PietMachine) Roll() {
+	if p.size > 1 {
+		count := int(p.pop())
+		depth := int(p.pop())
+		if count >= 0 {
+			for i := 0; i < count; i++ {
+				top := p.size - 1
+				buryVal := p.arr[top]
+				for j := top; j > top-depth; j-- {
+					p.arr[j] = p.arr[j-1]
+				}
+				p.arr[top-depth+1] = buryVal
+			}
+		} else {
+			for i := 0; i < -count; i++ {
+				top := p.size - 1
+				fetchVal := p.arr[top-depth+1]
+				for j := top - (depth - 2); j <= top; j++ {
+					p.arr[j-1] = p.arr[j]
+				}
+				p.arr[top] = fetchVal
+			}
+		}
 	}
 }
 
 func (p *PietMachine) Not() {
-	if p.stack.size > 0 {
-		val := p.stack.pop()
+	if p.size > 0 {
+		val := p.pop()
 		if val == 0 {
 			p.Push(1)
 		} else {
@@ -54,43 +80,43 @@ func (p *PietMachine) Not() {
 }
 
 func (p *PietMachine) Dup() {
-	if p.stack.size > 0 {
-		val := p.stack.pop()
+	if p.size > 0 {
+		val := p.pop()
 		p.Push(val)
 		p.Push(val)
 	}
 }
 
 func (p *PietMachine) Binary(op string) {
-	if p.stack.size < 2 {
+	if p.size < 2 {
 		return
 	}
-	a := p.stack.pop()
-	b := p.stack.pop()
+	a := p.pop()
+	b := p.pop()
 	switch op {
 	case "+":
-		p.stack.push(b + a)
+		p.Push(b + a)
 	case "-":
-		p.stack.push(b - a)
+		p.Push(b - a)
 	case "*":
-		p.stack.push(b * a)
+		p.Push(b * a)
 	case "/":
 		if a == 0 {
-			p.stack.push(99999999)
+			p.Push(99999999)
 			//this is what npiet does. The spec recommends ignoring:
 			//p.stack.push(b)
 			//p.stack.push(a)
 			//TODO: make these a configuration option?
 		} else {
-			p.stack.push(b / a)
+			p.Push(b / a)
 		}
 	case "%":
-		p.stack.push(b % a)
+		p.Push(b % a)
 	case ">":
 		if b > a {
-			p.stack.push(1)
+			p.Push(1)
 		} else {
-			p.stack.push(0)
+			p.Push(0)
 		}
 	default:
 		panic("unknown op: " + op)

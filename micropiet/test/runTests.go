@@ -31,22 +31,20 @@ func runTest(name string) {
 
 	vm := machine.NewMachine()
 
+	macros := make(map[string][]*micropiet.Token)
+
 	file, err := os.Open(name)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer func() {
-		//x := recover()
-		//if x != nil {
-		//	log.Fatalln("TEST FAILED: ", x)
-		//}
-	}()
 	scanner := bufio.NewScanner(file)
 	text := ""
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "@@") {
-			prog, err := micropiet.Parse(text)
+			var prog *micropiet.Program
+			var err error
+			prog, macros, err = micropiet.Parse(text, macros)
 			if err != nil {
 				log.Fatalln(err)
 			}

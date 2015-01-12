@@ -8,6 +8,14 @@ func (p *parser) next() *Token {
 	return <-p.toks
 }
 
+func (p *parser) startMacroReplacement(macros map[string][]*Token) chan struct{} {
+	newChan := make(chan *Token)
+	quit := make(chan struct{})
+	go replaceTokens(p.toks, newChan, quit, macros)
+	p.toks = newChan
+	return quit
+}
+
 func (p *parser) expect(typ TokenType) *Token {
 	t := p.next()
 	if t.Type != typ {
@@ -16,11 +24,13 @@ func (p *parser) expect(typ TokenType) *Token {
 	return t
 }
 
-func Parse(text string) (*Program, error) {
+func Parse(text string, macros map[string][]*Token) (*Program, map[string][]*Token, error) {
 	tokens := make(chan *Token)
 	go Tokenize(text, tokens)
 	p := parser{tokens}
-	macros := make(map[string][]*Token)
+	if macros == nil {
+		macros = make(map[string][]*Token)
+	}
 	var currentToken *Token
 	//Parse macros
 	for currentToken = p.next(); currentToken.Type == TT_HASH; currentToken = p.next() {
@@ -35,8 +45,9 @@ func Parse(text string) (*Program, error) {
 		}
 		macros[name] = macro
 	}
+	sig := p.startMacroReplacement(macros)
 	prog := NewProgram()
-	for ; currentToken.Type != TT_EOF; currentToken = <-tokens {
+	for ; currentToken.Type != TT_EOF; currentToken = p.next() {
 		switch currentToken.Type {
 		case TT_INTEGER:
 			prog.AddCommand(NewPushCommand(currentToken.Data))
@@ -58,9 +69,12 @@ func Parse(text string) (*Program, error) {
 			prog.AddCommand(NewNotCommand())
 		case TT_DUP:
 			prog.AddCommand(NewDupCommand())
+		case TT_ROLL:
+			prog.AddCommand(NewRollCommand())
 		default:
 			panic("Unexpected token received: " + currentToken.Type.String())
 		}
 	}
-	return prog, nil
+	close(sig)
+	return prog, macros, nil
 }

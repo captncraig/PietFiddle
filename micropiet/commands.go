@@ -45,3 +45,11 @@ func NewDupCommand() *Command {
 			return ""
 		}}
 }
+
+func NewRollCommand() *Command {
+	return &Command{
+		action: func(vm *machine.PietMachine) string {
+			vm.Roll()
+			return ""
+		}}
+}
