@@ -7,7 +7,6 @@ angular.module('piet')
 	$scope.settings = {}
 	$scope.editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
 	$scope.hover = {size:0}
-	$scope.imgur = imgurData
 	console.log($scope.program)
 	
 	$scope.getCellText = function(cell){
@@ -87,11 +86,6 @@ angular.module('piet')
 	}
 	$scope.setColor = function(c){
 		$scope.editState.selectedColor = c
-	}
-	$scope.submitPin = function(){
-		if(!$scope.imgur.pin) return;
-		$http.get('/pin/'+$scope.imgur.pin)
-		
 	}
 });
 

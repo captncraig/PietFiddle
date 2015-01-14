@@ -16,7 +16,7 @@ command := integer //push n
 	| :identifier //label
 	| jmp identifier //jump unconditionally
 	| br identifier identifier //branch. Nonzero/zero labels
-	| sw identifier identifier identifier identifier //4 way switch based on mod4
+	| switch (integer identifier)* end // switch. Followed by int/lable pairs to jump to for given values
 	| identifier //macro expansion
 
 integer := [0-9]+
