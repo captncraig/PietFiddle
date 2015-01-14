@@ -53,3 +53,10 @@ func NewRollCommand() *Command {
 			return ""
 		}}
 }
+
+func NewJmp(lbl string) *Command {
+	return &Command{
+		action: func(vm *machine.PietMachine) string {
+			return lbl
+		}}
+}

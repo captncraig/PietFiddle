@@ -82,7 +82,7 @@ func buildTokenMap() []tokenDef {
 		tokenDef{regexp.MustCompile("^print"), TT_PRINT},
 		tokenDef{regexp.MustCompile("^br"), TT_BRANCH},
 		tokenDef{regexp.MustCompile("^#"), TT_HASH},
-		tokenDef{regexp.MustCompile("^:[a-zA-Z][a-zA-Z0-9]*"), TT_LABEL},
+		tokenDef{regexp.MustCompile("^[a-zA-Z][a-zA-Z0-9]*:"), TT_LABEL},
 		tokenDef{regexp.MustCompile("^{"), TT_LCURL},
 		tokenDef{regexp.MustCompile("^}"), TT_RCURL},
 		//Identifier last

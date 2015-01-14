@@ -71,10 +71,15 @@ func Parse(text string, macros map[string][]*Token) (*Program, map[string][]*Tok
 			prog.AddCommand(NewDupCommand())
 		case TT_ROLL:
 			prog.AddCommand(NewRollCommand())
+		case TT_JMP:
+			prog.AddCommand(NewJmp(p.expect(TT_IDENTIFIER).Data))
+		case TT_LABEL:
+			prog.Mark(currentToken.Data)
 		default:
 			panic("Unexpected token received: " + currentToken.Type.String())
 		}
 	}
+
 	close(sig)
 	return prog, macros, nil
 }
