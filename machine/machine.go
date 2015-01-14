@@ -85,9 +85,9 @@ func (p *PietMachine) Roll() {
 				}
 				if prev != nil {
 					prev.next = current.next
+					current.next = p.top
+					p.top = current
 				}
-				current.next = p.top
-				p.top = current
 			}
 		}
 	}
