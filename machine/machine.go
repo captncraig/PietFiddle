@@ -1,13 +1,20 @@
 package machine
 
+import ()
+
 type PietMachine struct {
-	arr  []int64
+	top  *stackNode
 	size int
+}
+
+type stackNode struct {
+	value int64
+	next  *stackNode
 }
 
 func NewMachine() *PietMachine {
 	return &PietMachine{
-		arr:  make([]int64, 1000, 1000),
+		top:  nil,
 		size: 0,
 	}
 }
@@ -17,27 +24,34 @@ func (p *PietMachine) GetStack() []int64 {
 		return []int64{}
 	}
 	x := make([]int64, p.size)
-	for i := 0; i < p.size; i++ {
-		x[i] = p.arr[p.size-1-i]
+	n := p.top
+	i := 0
+	for n != nil {
+		x[i] = n.value
+		i++
+		n = n.next
 	}
 	return x
 }
 
 func (p *PietMachine) Push(val int64) {
-	p.arr[p.size] = val
 	p.size++
+	p.top = &stackNode{value: val, next: p.top}
 }
 
 func (p *PietMachine) Pop() {
 	if p.size > 0 {
 		p.size--
+		p.top = p.top.next
 	}
 }
 
 func (p *PietMachine) pop() int64 {
 	if p.size > 0 {
 		p.size--
-		return p.arr[p.size]
+		top := p.top
+		p.top = p.top.next
+		return top.value
 	}
 	panic("unchecked pop")
 }
@@ -48,21 +62,32 @@ func (p *PietMachine) Roll() {
 		depth := int(p.pop())
 		if count >= 0 {
 			for i := 0; i < count; i++ {
-				top := p.size - 1
-				buryVal := p.arr[top]
-				for j := top; j > top-depth; j-- {
-					p.arr[j] = p.arr[j-1]
+				bury := p.top
+				p.top = bury.next
+				current := bury
+				currentIdx := 1
+				for currentIdx < depth {
+					current = current.next
+					currentIdx++
 				}
-				p.arr[top-depth+1] = buryVal
+				bury.next = current.next
+				current.next = bury
 			}
 		} else {
 			for i := 0; i < -count; i++ {
-				top := p.size - 1
-				fetchVal := p.arr[top-depth+1]
-				for j := top - (depth - 2); j <= top; j++ {
-					p.arr[j-1] = p.arr[j]
+				current := p.top
+				var prev *stackNode = nil
+				currentIdx := 1
+				for currentIdx < depth {
+					prev = current
+					current = current.next
+					currentIdx++
 				}
-				p.arr[top] = fetchVal
+				if prev != nil {
+					prev.next = current.next
+				}
+				current.next = p.top
+				p.top = current
 			}
 		}
 	}
