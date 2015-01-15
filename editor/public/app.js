@@ -15,20 +15,32 @@ angular.module('piet')
 	$scope.getCellStyle = function(cell){
 		obj = {"box-sizing":"border-box"}
 		style = "1px solid black"
-		if(cell.x == 0 || $scope.program.rows[cell.y].cells[cell.x-1].color != cell.color){
+		edgeStyle = "2px solid black"
+		if(cell.x == 0){
+			obj["border-left"] = edgeStyle
+		}
+		else if($scope.program.rows[cell.y].cells[cell.x-1].color != cell.color){
 			obj["border-left"] = style
 		}
-		if(cell.x >= ($scope.program.w - 1) || $scope.program.rows[cell.y].cells[cell.x+1].color != cell.color){
+		if(cell.x >= ($scope.program.w - 1)){
+			obj["border-right"] = edgeStyle
+		} 
+		else if($scope.program.rows[cell.y].cells[cell.x+1].color != cell.color){
 			obj["border-right"] = style
 		}
-		if(cell.y == 0 || $scope.program.rows[cell.y-1].cells[cell.x].color != cell.color){
+		if(cell.y == 0){
+			obj["border-top"] = edgeStyle
+		}
+		else if( $scope.program.rows[cell.y-1].cells[cell.x].color != cell.color){
 			obj["border-top"] = style
 		}
-		if(cell.y >= ($scope.program.h - 1) || $scope.program.rows[cell.y+1].cells[cell.x].color != cell.color){
+		if(cell.y >= ($scope.program.h - 1)){
+			obj["border-bottom"] = edgeStyle
+		} 
+		else if($scope.program.rows[cell.y+1].cells[cell.x].color != cell.color){
 			obj["border-bottom"] = style
 		}
 		return obj
-		
 	}
 	$scope.mouseDown = function(cell,ev){
 		//left click

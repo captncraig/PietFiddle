@@ -21,6 +21,16 @@ box-sizing:border-box;
 	height:100%;
 	left:0px;
 	background-color:cyan;
+	position:absolute;
+	top:0px;
+}
+.rightbar{
+	position:absolute;
+	width:500px;
+	height:50px;
+	left:200px;
+	top: 0px;
+	background-color:cyan;
 }
 .selected{
 	width:180px;
@@ -40,7 +50,7 @@ box-sizing:border-box;
 .program{
 	position:absolute;
 	left:230px;
-	top: 0px;
+	top: 80px;
 	clear:both;
 }
 .row {
