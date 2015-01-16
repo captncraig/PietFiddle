@@ -1,6 +1,6 @@
 from debian:jessie
 
-ADD . /editor
+ADD editor /editor
 
 EXPOSE 3000
 
