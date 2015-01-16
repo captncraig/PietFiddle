@@ -13,8 +13,10 @@ import (
 
 var palette color.Palette = buildPalette()
 
+var colors = make([]color.Color, 20)
+
 func buildPalette() color.Palette {
-	p := make([]color.Color, 20, 20)
+	p := colors
 	p[0], _ = colorful.Hex("#FFC0C0")
 	p[1], _ = colorful.Hex("#FF0000")
 	p[2], _ = colorful.Hex("#C00000")

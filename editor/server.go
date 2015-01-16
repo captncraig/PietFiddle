@@ -36,6 +36,12 @@ func renderImage(w http.ResponseWriter, r *http.Request, params martini.Params) 
 		cs64, err := strconv.ParseInt(csQuery, 10, 32)
 		if err == nil {
 			cs = int(cs64)
+			if cs > 80 {
+				cs = 80
+			}
+			if cs < 1 {
+				cs = 1
+			}
 		}
 	}
 	fmt.Println(id)
