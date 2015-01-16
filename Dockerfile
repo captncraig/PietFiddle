@@ -1,10 +1,7 @@
-from golang:1.4
+from debian:jessie
 
-ADD . /go/src/github.com/captncraig/pietfiddle
-WORKDIR /go/src/github.com/captncraig/pietfiddle/editor
-RUN go get -v 
-RUN go build
+ADD . /editor
 
 EXPOSE 3000
 
-ENTRYPOINT /go/src/github.com/captncraig/pietfiddle/editor/editor
+ENTRYPOINT /editor/app
