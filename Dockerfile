@@ -1,6 +1,7 @@
-from debian:jessie
+from scratch
 
 ADD editor /editor
+WORKDIR /editor
 
 EXPOSE 3000
 
