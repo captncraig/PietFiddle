@@ -1,11 +1,14 @@
-package main
+package images
 
 import (
 	"fmt"
 	"github.com/lucasb-eyer/go-colorful"
+	"image"
 	"image/color"
-	"image/png"
-	"net/http"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
 )
 
 var palette color.Palette = buildPalette()
@@ -35,10 +38,8 @@ func buildPalette() color.Palette {
 	return color.Palette(p)
 }
 
-func LoadImage(url string, codelSize int) (width int, height int, data string) {
-	resp, _ := http.Get(url)
-	//file, _ := os.Open("C:\\Users\\cpeterson\\Desktop\\npiet\\examples\\hi.png")
-	i, _ := png.Decode(resp.Body)
+func LoadImage(input io.Reader, codelSize int) (width int, height int, data string) {
+	i, _, _ := image.Decode(input)
 
 	width = i.Bounds().Max.X
 	height = i.Bounds().Max.Y
@@ -54,14 +55,11 @@ func LoadImage(url string, codelSize int) (width int, height int, data string) {
 		for x := 0; x < width; x++ {
 			c := i.At(x*codelSize, y*codelSize)
 			idx := palette.Index(c)
+			//TODO: Check found color against actual color.
+			// Apply rule on mismatch. Take closest? White? Black?
 			b[y*width+x] = byte(idx + 'A')
 		}
 	}
 	fmt.Println(string(b))
 	return width, height, string(b)
-}
-
-func main() {
-	x, y, d := LoadImage("http://www.dangermouse.net/esoteric/piet/Piet_hello.png", 1)
-	runProgram(x, y, d)
 }
