@@ -61,6 +61,7 @@ func init() {
 		image := Image{
 			Id:     "~" + img.Id,
 			Width:  w,
+			Name:   img.Title,
 			Height: h,
 			Data:   d,
 		}

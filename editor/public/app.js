@@ -3,7 +3,7 @@ angular.module('piet',[])
 angular.module('piet')
 	.controller('EditorCtrl', function EditorCtrl($scope,$http) {
 	$scope.palette = makePalette()
-	$scope.program = makeProgram(10,10,null) 
+	$scope.program = makeProgram(W,H,DATA) 
 	$scope.settings = {}
 	$scope.editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
 	$scope.hover = {size:0}

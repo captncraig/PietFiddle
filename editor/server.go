@@ -19,13 +19,30 @@ func main() {
 	m := martini.Classic()
 	m.Use(render.Renderer(render.Options{Extensions: []string{".tmpl", ".html"}, Delims: render.Delims{"{[{", "}]}"}}))
 	m.Get("/", serveIndex)
-	m.Get("/(?P<id>~?[a-zA-Z0-9]+).png", renderImage)
+	m.Get("/examples", serveExamples)
+	m.Get("/:id", serveImg)
+	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderImage)
 	m.Run()
 }
 
 func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render) {
+	dat := Image{Width: 10, Height: 10, Data: ""}
+	ren.HTML(200, "editor", dat)
+}
 
-	ren.HTML(200, "editor", nil)
+func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render) {
+	id := params["id"]
+	img, err := database.GetImage(id)
+	if err != nil {
+		w.WriteHeader(404)
+		fmt.Println(err)
+		return
+	}
+	ren.HTML(200, "editor", img)
+}
+
+func serveExamples(ren render.Render) {
+	ren.HTML(200, "examples", database.GetExampleImages())
 }
 
 func renderImage(w http.ResponseWriter, r *http.Request, params martini.Params) {
