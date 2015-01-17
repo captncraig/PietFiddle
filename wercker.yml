@@ -5,3 +5,4 @@ build:
         name: docker version
         code: |
           docker -v
+          go env
