@@ -1,3 +1,6 @@
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
 $(function(){
 	
 	var jCanvas = $("#programCanvas");
@@ -35,32 +38,41 @@ $(function(){
 		canvas.height = cellSize * H;
 		drawAll();
 	}
-	
+	var ctx = canvas.getContext('2d');
 	function drawAll(){
-		var ctx = canvas.getContext('2d');
+		
 		for (var y = 0; y< H; y++){
 			for(var x = 0; x < W; x++){
-				var color = programText[y*W + x];
-				var px = x * cellSize;
-				var py = y *cellSize;
-				ctx.fillStyle = pallette[color];
-				ctx.fillRect(px, py, cellSize,cellSize)
-				if(x == 0 || programText[y*W + x - 1] != color){
-					line(px,py,px,py + cellSize,ctx);
-				}
-				if(x == W-1 || programText[y*W + x + 1] != color){
-					line(px + cellSize,py,px+cellSize,py + cellSize,ctx);
-				}
-				if(y == 0 || programText[(y-1)*W + x] != color){
-					line(px,py,px + cellSize,py,ctx);
-				}
-				if(y == H-1 || programText[(y+1)*W + x] != color){
-					line(px,py+cellSize,px+cellSize,py + cellSize,ctx);
-				}
+				drawCell(x,y,false);
 			}
 		}
 	}
-	function line(x0,y0,x1,y1,ctx){
+	function drawCell(x,y,updateNeighbor){
+		var color = programText[y*W + x];
+		var px = x * cellSize;
+		var py = y *cellSize;
+		ctx.fillStyle = pallette[color];
+		ctx.fillRect(px, py, cellSize,cellSize)
+		if(x == 0 || programText[y*W + x - 1] != color){
+			line(px,py,px,py + cellSize);
+		}
+		if(x == W-1 || programText[y*W + x + 1] != color){
+			line(px + cellSize,py,px+cellSize,py + cellSize);
+		}
+		if(y == 0 || programText[(y-1)*W + x] != color){
+			line(px,py,px + cellSize,py);
+		}
+		if(y == H-1 || programText[(y+1)*W + x] != color){
+			line(px,py+cellSize,px+cellSize,py + cellSize);
+		}
+		if(updateNeighbor){
+			if(x != 0)drawCell(x-1,y,false);
+			if(x != W-1)drawCell(x+1,y,false);
+			if(y != 0)drawCell(x,y-1,false);
+			if(y != H-1)drawCell(x,y+1,false);
+		}
+	}
+	function line(x0,y0,x1,y1){
 		ctx.beginPath();
     	ctx.moveTo(x0,y0);
 		ctx.lineTo(x1,y1);
@@ -82,10 +94,39 @@ $(function(){
 		var y = Math.floor(ev.offsetY / cellSize);
 		enterCell(x,y);
 	});
+	jCanvas.bind('mousedown', function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		mousedown(x,y);
+	});
+	jCanvas.bind('mouseup', function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		mouseup(x,y);
+	});
+	
+	//Edit states:
+	var ES_WAIT = 0;
+	var ES_DRAGGING = 1;
+	var currentState = ES_WAIT;
+	
 	function enterCell(x,y){
 		currentX = x;
 		currentY = y;
-		console.log(x,y);
+		if (currentState == ES_DRAGGING){
+			setCell(x,y,'A');
+		}
+	}
+	function setCell(x,y,color){
+		programText = programText.replaceAt(y*W + x, color);
+		drawCell(x,y,true);
+	}
+	function mousedown(x,y){
+		currentState = ES_DRAGGING;
+		setCell(x,y,"A");
+	}
+	function mouseup(x,y){
+		currentState = ES_WAIT;
 	}
 	init();
 })
