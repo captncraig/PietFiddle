@@ -27,7 +27,7 @@ $(function(){
 	pallette['S'] = "#FFFFFF";
 	pallette['T'] = "#000000";
 	
-	var cellSize = 30;
+	var cellSize = 20;
 	
 	function init(){
 		canvas.width = cellSize * W;
@@ -35,16 +35,35 @@ $(function(){
 		drawAll();
 	}
 	
-	
 	function drawAll(){
 		var ctx = canvas.getContext('2d');
 		for (var y = 0; y< H; y++){
 			for(var x = 0; x < W; x++){
 				var color = programText[y*W + x];
+				var px = x * cellSize;
+				var py = y *cellSize;
 				ctx.fillStyle = pallette[color];
-				ctx.fillRect(x*cellSize, y*cellSize, cellSize,cellSize)
+				ctx.fillRect(px, py, cellSize,cellSize)
+				if(x == 0 || programText[y*W + x - 1] != color){
+					line(px,py,px,py + cellSize,ctx);
+				}
+				if(x == W-1 || programText[y*W + x + 1] != color){
+					line(px + cellSize,py,px+cellSize,py + cellSize,ctx);
+				}
+				if(y == 0 || programText[(y-1)*W + x] != color){
+					line(px,py,px + cellSize,py,ctx);
+				}
+				if(y == H-1 || programText[(y+1)*W + x] != color){
+					line(px,py+cellSize,px+cellSize,py + cellSize,ctx);
+				}
 			}
 		}
+	}
+	function line(x0,y0,x1,y1,ctx){
+		ctx.beginPath();
+    	ctx.moveTo(x0,y0);
+		ctx.lineTo(x1,y1);
+    	ctx.stroke();
 	}
 	
 	init();
