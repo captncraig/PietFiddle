@@ -2,7 +2,6 @@ String.prototype.replaceAt=function(index, character) {
     return this.substr(0, index) + character + this.substr(index+character.length);
 }
 $(function(){
-	
 	var jCanvas = $("#programCanvas");
 	var canvas = jCanvas[0];
 	var programText = DATA;
@@ -31,7 +30,7 @@ $(function(){
 	pallette['S'] = "#FFFFFF";
 	pallette['T'] = "#000000";
 	
-	var cellSize = 20;
+	var cellSize = 25;
 	
 	function init(){
 		canvas.width = cellSize * W;
@@ -40,7 +39,6 @@ $(function(){
 	}
 	var ctx = canvas.getContext('2d');
 	function drawAll(){
-		
 		for (var y = 0; y< H; y++){
 			for(var x = 0; x < W; x++){
 				drawCell(x,y,false);
@@ -51,19 +49,23 @@ $(function(){
 		var color = programText[y*W + x];
 		var px = x * cellSize;
 		var py = y *cellSize;
+		var tl = {x:x*cellSize,y:y*cellSize};
+		var bl = {x:x*cellSize,y:y*cellSize+cellSize};
+		var tr = {x:x*cellSize+cellSize,y:y*cellSize};
+		var br = {x:x*cellSize+cellSize,y:y*cellSize+cellSize};
 		ctx.fillStyle = pallette[color];
 		ctx.fillRect(px, py, cellSize,cellSize)
 		if(x == 0 || programText[y*W + x - 1] != color){
-			line(px,py,px,py + cellSize);
+			line(tl,bl);
 		}
 		if(x == W-1 || programText[y*W + x + 1] != color){
-			line(px + cellSize,py,px+cellSize,py + cellSize);
+			line(tr,br);
 		}
 		if(y == 0 || programText[(y-1)*W + x] != color){
-			line(px,py,px + cellSize,py);
+			line(tl,tr);
 		}
 		if(y == H-1 || programText[(y+1)*W + x] != color){
-			line(px,py+cellSize,px+cellSize,py + cellSize);
+			line(bl,br);
 		}
 		if(updateNeighbor){
 			if(x != 0)drawCell(x-1,y,false);
@@ -72,10 +74,11 @@ $(function(){
 			if(y != H-1)drawCell(x,y+1,false);
 		}
 	}
-	function line(x0,y0,x1,y1){
+	function line(a,b){
 		ctx.beginPath();
-    	ctx.moveTo(x0,y0);
-		ctx.lineTo(x1,y1);
+		ctx.lineWidth = 2;
+    	ctx.moveTo(a.x,a.y);
+		ctx.lineTo(b.x,b.y);
     	ctx.stroke();
 	}
 	var currentX = -1,currentY = -1;
@@ -97,36 +100,54 @@ $(function(){
 	jCanvas.bind('mousedown', function(ev){
 		var x = Math.floor(ev.offsetX / cellSize);
 		var y = Math.floor(ev.offsetY / cellSize);
-		mousedown(x,y);
+		var isRight = ev.button == 2;
+		mousedown(x,y,isRight);
 	});
 	jCanvas.bind('mouseup', function(ev){
 		var x = Math.floor(ev.offsetX / cellSize);
 		var y = Math.floor(ev.offsetY / cellSize);
-		mouseup(x,y);
+		var isRight = ev.button == 2;
+		mouseup(x,y,isRight);
 	});
+	jCanvas.bind('contextmenu', function(){return false;}); 
 	
-	//Edit states:
-	var ES_WAIT = 0;
-	var ES_DRAGGING = 1;
-	var currentState = ES_WAIT;
+	var editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
 	
 	function enterCell(x,y){
 		currentX = x;
 		currentY = y;
-		if (currentState == ES_DRAGGING){
-			setCell(x,y,'A');
+		if(editState.painting){
+			setCell(x,y);
 		}
 	}
-	function setCell(x,y,color){
-		programText = programText.replaceAt(y*W + x, color);
+	function setCell(x,y){
+		programText = programText.replaceAt(y*W + x, editState.selectedColor);
 		drawCell(x,y,true);
 	}
-	function mousedown(x,y){
-		currentState = ES_DRAGGING;
-		setCell(x,y,"A");
+	function mousedown(x,y,isRight){
+		if(!isRight){
+			if(editState.rightDown){
+				editState.filled = true;
+			}
+			else{
+				setCell(x,y);
+				editState.painting = true
+			}
+		}
+		else if(isRight){
+			editState.filled = false;
+			editState.rightDown = true;
+		}
 	}
-	function mouseup(x,y){
-		currentState = ES_WAIT;
+	function mouseup(x,y,isRight){
+		editState.painting = false;
+		console.log("UP",x,y,isRight)
+		if(isRight){
+			editState.rightDown = false;
+			if (!editState.filled)
+				editState.selectedColor = programText[y*W + x];
+			editState.filled = false;
+		}
 	}
 	init();
 })
