@@ -1,6 +1,7 @@
 $(function(){
 	
-	var canvas = $("#programCanvas")[0];
+	var jCanvas = $("#programCanvas");
+	var canvas = jCanvas[0];
 	var programText = DATA;
 	while(programText.length < W*H){
 		programText += "A";
@@ -65,6 +66,26 @@ $(function(){
 		ctx.lineTo(x1,y1);
     	ctx.stroke();
 	}
-	
+	var currentX = -1,currentY = -1;
+	jCanvas.bind('mousemove',function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		if(x != currentX || y != currentY){
+			enterCell(x,y)
+		}
+	});
+	jCanvas.bind('mouseleave',function(){
+		currentX = currentY = -1;
+	});
+	jCanvas.bind('mouseenter',function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		enterCell(x,y);
+	});
+	function enterCell(x,y){
+		currentX = x;
+		currentY = y;
+		console.log(x,y);
+	}
 	init();
 })
