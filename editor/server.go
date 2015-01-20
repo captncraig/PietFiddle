@@ -20,6 +20,7 @@ func main() {
 	m.Use(render.Renderer(render.Options{Extensions: []string{".tmpl", ".html"}, Delims: render.Delims{"{[{", "}]}"}}))
 	m.Get("/", serveIndex)
 	m.Get("/examples", serveExamples)
+	m.Get("/ko", serveKO)
 	m.Get("/:id", serveImg)
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderImage)
 	m.Run()
@@ -28,6 +29,10 @@ func main() {
 func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render) {
 	dat := Image{Width: 10, Height: 10, Data: ""}
 	ren.HTML(200, "editor", dat)
+}
+func serveKO(w http.ResponseWriter, r *http.Request, ren render.Render) {
+	dat := Image{Width: 13, Height: 13, Data: "EMNORLFIKEQRGAOKLJMNQRQRGALEHBDPAMNODAFJDPIEAMLJBEMIIHRQPTTTPCHNEMNFPTTGTTABOFDBCMTGGGTDERDPHIQTTKTTEQJGJEOCDTOTDFKMJKCLRPQIQPMLGDMRJMFEIJGDAHPEFLBABACBHLRQKLBAPRQEIFEKI"}
+	ren.HTML(200, "ko", dat)
 }
 
 func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render) {

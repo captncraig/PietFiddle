@@ -1,0 +1,22 @@
+<html>
+
+<head>
+<link rel="stylesheet" type="text/css" href="kostyles.css" />
+<script> W = {[{.Width}]}; H = {[{.Height}]}; DATA={[{.Data}]};</script>
+</head>
+<body>
+<div class='sidebar'>
+	side
+</div>
+</div>
+<div class='navBar'>
+	<a href='examples'>example programs</a>
+</div>
+<div class='program'>
+	<div class='row' data-bind="foreach: rows">
+        <div data-bind="text: data"/>    
+    </div>
+</div>
+<script src='knockout.js'></script>
+<script src='ko.js'></script>
+</body>

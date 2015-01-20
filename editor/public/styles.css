@@ -56,8 +56,8 @@ box-sizing:border-box;
 .row {
 	white-space: nowrap;
 	box-sizing:border-box;
--webkit-box-sizing:border-box;
--moz-box-sizing: border-box;
+	-webkit-box-sizing:border-box;
+	-moz-box-sizing: border-box;
 }
 body{
 	overflow:scroll;
