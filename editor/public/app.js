@@ -35,7 +35,9 @@ $(function(){
 	function init(){
 		canvas.width = cellSize * W;
 		canvas.height = cellSize * H;
+		console.log("start")
 		drawAll();
+		console.log("fin")
 	}
 	var ctx = canvas.getContext('2d');
 	function drawAll(){
@@ -47,6 +49,7 @@ $(function(){
 	}
 	function drawCell(x,y,updateNeighbor){
 		var color = programText[y*W + x];
+		console.log(x,y,color)
 		var px = x * cellSize;
 		var py = y *cellSize;
 		var tl = {x:x*cellSize,y:y*cellSize};
@@ -76,7 +79,7 @@ $(function(){
 	}
 	function line(a,b){
 		ctx.beginPath();
-		ctx.lineWidth = 2;
+		ctx.lineWidth = 1;
     	ctx.moveTo(a.x,a.y);
 		ctx.lineTo(b.x,b.y);
     	ctx.stroke();
