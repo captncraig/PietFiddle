@@ -91,6 +91,7 @@ $(function(){
 	});
 	jCanvas.bind('mouseleave',function(){
 		currentX = currentY = -1;
+		editState.painting = false;
 	});
 	jCanvas.bind('mouseenter',function(ev){
 		var x = Math.floor(ev.offsetX / cellSize);
