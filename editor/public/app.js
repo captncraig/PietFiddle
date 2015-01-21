@@ -1,173 +1,156 @@
-angular.module('piet',[])
-
-angular.module('piet')
-	.controller('EditorCtrl', function EditorCtrl($scope,$http) {
-	$scope.palette = makePalette()
-	$scope.program = makeProgram(W,H,DATA) 
-	$scope.settings = {}
-	$scope.editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
-	$scope.hover = {size:0}
-	console.log($scope.program)
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
+$(function(){
+	var jCanvas = $("#programCanvas");
+	var canvas = jCanvas[0];
+	var programText = DATA;
+	while(programText.length < W*H){
+		programText += "A";
+	}
+	var pallette = [];
+	pallette['A'] = "#FFC0C0";
+	pallette['B'] = "#FF0000";
+	pallette['C'] = "#C00000";
+	pallette['D'] = "#FFFFC0";
+	pallette['E'] = "#FFFF00";
+	pallette['F'] = "#C0C000";
+	pallette['G'] = "#C0FFC0";
+	pallette['H'] = "#00FF00";
+	pallette['I'] = "#00C000";
+	pallette['J'] = "#C0FFFF";
+	pallette['K'] = "#00FFFF";
+	pallette['L'] = "#00C0C0";
+	pallette['M'] = "#C0C0FF";
+	pallette['N'] = "#0000FF";
+	pallette['O'] = "#0000C0";
+	pallette['P'] = "#FFC0FF";
+	pallette['Q'] = "#FF00FF";
+	pallette['R'] = "#C000C0";
+	pallette['S'] = "#FFFFFF";
+	pallette['T'] = "#000000";
 	
-	$scope.getCellText = function(cell){
-		return ""
+	var cellSize = 25;
+	
+	function init(){
+		canvas.width = cellSize * W;
+		canvas.height = cellSize * H;
+		console.log("start")
+		drawAll();
+		console.log("fin")
 	}
-	$scope.getCellStyle = function(cell){
-		obj = {"box-sizing":"border-box"}
-		style = "1px solid black"
-		edgeStyle = "2px solid black"
-		if(cell.x == 0){
-			obj["border-left"] = edgeStyle
-		}
-		else if($scope.program.rows[cell.y].cells[cell.x-1].color != cell.color){
-			obj["border-left"] = style
-		}
-		if(cell.x >= ($scope.program.w - 1)){
-			obj["border-right"] = edgeStyle
-		} 
-		else if($scope.program.rows[cell.y].cells[cell.x+1].color != cell.color){
-			obj["border-right"] = style
-		}
-		if(cell.y == 0){
-			obj["border-top"] = edgeStyle
-		}
-		else if( $scope.program.rows[cell.y-1].cells[cell.x].color != cell.color){
-			obj["border-top"] = style
-		}
-		if(cell.y >= ($scope.program.h - 1)){
-			obj["border-bottom"] = edgeStyle
-		} 
-		else if($scope.program.rows[cell.y+1].cells[cell.x].color != cell.color){
-			obj["border-bottom"] = style
-		}
-		return obj
-	}
-	$scope.mouseDown = function(cell,ev){
-		//left click
-		if(ev.which == 1){
-			//right held down. Flood fill.
-			if($scope.editState.rightDown){
-				$scope.editState.filled = true;
-				$scope.hover.size = floodFill(cell,$scope.program,$scope.editState.selectedColor)
-				$scope.hover.size = floodFill(cell,$scope.program)
+	var ctx = canvas.getContext('2d');
+	function drawAll(){
+		for (var y = 0; y< H; y++){
+			for(var x = 0; x < W; x++){
+				drawCell(x,y,false);
 			}
-			//regular click. start painting
+		}
+	}
+	function drawCell(x,y,updateNeighbor){
+		var color = programText[y*W + x];
+		console.log(x,y,color)
+		var px = x * cellSize;
+		var py = y *cellSize;
+		var tl = {x:x*cellSize,y:y*cellSize};
+		var bl = {x:x*cellSize,y:y*cellSize+cellSize};
+		var tr = {x:x*cellSize+cellSize,y:y*cellSize};
+		var br = {x:x*cellSize+cellSize,y:y*cellSize+cellSize};
+		ctx.fillStyle = pallette[color];
+		ctx.fillRect(px, py, cellSize,cellSize)
+		if(x == 0 || programText[y*W + x - 1] != color){
+			line(tl,bl);
+		}
+		if(x == W-1 || programText[y*W + x + 1] != color){
+			line(tr,br);
+		}
+		if(y == 0 || programText[(y-1)*W + x] != color){
+			line(tl,tr);
+		}
+		if(y == H-1 || programText[(y+1)*W + x] != color){
+			line(bl,br);
+		}
+		if(updateNeighbor){
+			if(x != 0)drawCell(x-1,y,false);
+			if(x != W-1)drawCell(x+1,y,false);
+			if(y != 0)drawCell(x,y-1,false);
+			if(y != H-1)drawCell(x,y+1,false);
+		}
+	}
+	function line(a,b){
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+    	ctx.moveTo(a.x,a.y);
+		ctx.lineTo(b.x,b.y);
+    	ctx.stroke();
+	}
+	var currentX = -1,currentY = -1;
+	jCanvas.bind('mousemove',function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		if(x != currentX || y != currentY){
+			enterCell(x,y)
+		}
+	});
+	jCanvas.bind('mouseleave',function(){
+		currentX = currentY = -1;
+	});
+	jCanvas.bind('mouseenter',function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		enterCell(x,y);
+	});
+	jCanvas.bind('mousedown', function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		var isRight = ev.button == 2;
+		mousedown(x,y,isRight);
+	});
+	jCanvas.bind('mouseup', function(ev){
+		var x = Math.floor(ev.offsetX / cellSize);
+		var y = Math.floor(ev.offsetY / cellSize);
+		var isRight = ev.button == 2;
+		mouseup(x,y,isRight);
+	});
+	jCanvas.bind('contextmenu', function(){return false;}); 
+	
+	var editState = {selectedColor:'A',painting:false,rightDown:false,filled:false}
+	
+	function enterCell(x,y){
+		currentX = x;
+		currentY = y;
+		if(editState.painting){
+			setCell(x,y);
+		}
+	}
+	function setCell(x,y){
+		programText = programText.replaceAt(y*W + x, editState.selectedColor);
+		drawCell(x,y,true);
+	}
+	function mousedown(x,y,isRight){
+		if(!isRight){
+			if(editState.rightDown){
+				editState.filled = true;
+			}
 			else{
-				cell.color = $scope.editState.selectedColor
-				$scope.editState.painting = true
-				$scope.hover.size = floodFill(cell,$scope.program)
+				setCell(x,y);
+				editState.painting = true
 			}
 		}
-		else if(ev.which == 3){
-			$scope.editState.filled = false;
-			$scope.editState.rightDown = true;
+		else if(isRight){
+			editState.filled = false;
+			editState.rightDown = true;
 		}
 	}
-	$scope.mouseEnter = function(cell){
-		if($scope.editState.painting){
-			cell.color = $scope.editState.selectedColor
-		}
-		$scope.hover.size = floodFill(cell,$scope.program)
-	}
-	$scope.mouseUp = function(cell,ev){
-		$scope.editState.painting = false;
-		if(ev.which == 3){
-			$scope.editState.rightDown = false;
-			if (!$scope.editState.filled)
-				$scope.editState.selectedColor = cell.color;
-			$scope.editState.filled = false;
+	function mouseup(x,y,isRight){
+		editState.painting = false;
+		console.log("UP",x,y,isRight)
+		if(isRight){
+			editState.rightDown = false;
+			if (!editState.filled)
+				editState.selectedColor = programText[y*W + x];
+			editState.filled = false;
 		}
 	}
-	keys = [110,112,94,43,45,42,47,37,33,62,60,115,100,114,105,73,111,79]
-	$scope.keypress = function(ev){
-		console.log(ev.keyCode, ev.keyIdentifier)
-		idx = keys.indexOf(ev.keyCode)
-		if(idx != -1)
-			$scope.editState.selectedColor = $scope.rotate($scope.editState.selectedColor,Math.floor(idx / 3),idx%3)
-		else if(ev.keyCode == 125){ // } key to cycle colors for whole program
-			rotateColors($scope.program)
-		}
-	}
-	$scope.rotate = function(src,hue,light){
-		x="ABCDEFGHIJKLMNOPQRST"
-		idx = x.indexOf(src)
-		light = ((idx % 3) + light) % 3
-		hue = (Math.floor(idx / 3) + hue) % 6
-		console.log(hue,light)
-		return x[hue*3 + light]
-	}
-	$scope.setColor = function(c){
-		$scope.editState.selectedColor = c
-	}
-});
-
-var mark = 0;
-function floodFill(cell,program,set){
-	mark++
-	var count = 0
-	var stack = [cell]
-	var targetColor = cell.color;
-	while(stack.length){
-		var target = stack.pop()
-		if(target.mark == mark || target.color != targetColor) continue;
-		//not marked, color match
-		target.mark = mark
-		if(set) target.color = set
-		count++
-		if(target.x > 0) stack.push(program.rows[target.y].cells[target.x-1])
-		if(target.x < program.w - 1) stack.push(program.rows[target.y].cells[target.x+1])
-		if(target.y > 0) stack.push(program.rows[target.y-1].cells[target.x])
-		if(target.y < program.h - 1) stack.push(program.rows[target.y+1].cells[target.x])
-	}
-	return count
-}
-
-function rotateColors(program){
-	letters = "ABCDEFGHIJKLMNOPQR"
-	for(var y=0; y<program.h; y++){
-		for(var x = 0; x<program.w; x++){
-			cell = program.rows[y].cells[x]
-			idx = letters.indexOf(cell.color)
-			if(idx != -1){
-				cell.color = letters[(idx+1) % 18]
-			}
-		}
-	}
-}
-
-function makeProgram(w,h,dat){
-	var program = {rows:[],w:w,h:h}
-	for(var y=0; y<h; y++){
-		var row = {cells:[]}
-		for(var x = 0; x<w; x++){
-			c = "S"
-			if(dat) c = dat[x+y*w]
-			row.cells.push({color:c,x:x,y:y,mark:0})
-		}
-		program.rows.push(row)
-	}
-	return program
-}
-
-function makePalette(){
-	return {
-		'A':{color:'A'},
-		'B':{color:'B'},
-		'C':{color:'C'},
-		'D':{color:'D'},
-		'E':{color:'E'},
-		'F':{color:'F'},
-		'G':{color:'G'},
-		'H':{color:'H'},
-		'I':{color:'I'},
-		'J':{color:'J'},
-		'K':{color:'K'},
-		'L':{color:'L'},
-		'M':{color:'M'},
-		'N':{color:'N'},
-		'O':{color:'O'},
-		'P':{color:'P'},
-		'Q':{color:'Q'},
-		'R':{color:'R'},
-	}
-}
+	init();
+})
