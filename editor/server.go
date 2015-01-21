@@ -1,18 +1,22 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/captncraig/pietfiddle/images"
 	"github.com/go-martini/martini"
+	"github.com/hashicorp/golang-lru"
 	"github.com/martini-contrib/render"
 	"net/http"
 	"strconv"
 )
 
 var database Database
+var cache *lru.Cache
 
 func init() {
 	database = NewBoltDb()
+	cache, _ = lru.New(2000)
 }
 
 func main() {
@@ -69,5 +73,18 @@ func renderImage(w http.ResponseWriter, r *http.Request, params martini.Params) 
 		return
 	}
 	w.Header().Add("Content-Type", "image/png")
-	images.BuildImage(img.Width, img.Height, img.Data, cs, w)
+	cacheKey := fmt.Sprintf("%s-%d", id, cs)
+	fmt.Println(cacheKey)
+	data, ok := cache.Get(cacheKey)
+	fmt.Println(data, ok)
+	var b []byte
+	if ok {
+		b = data.([]byte)
+	} else {
+		buf := bytes.NewBuffer(nil)
+		images.BuildImage(img.Width, img.Height, img.Data, cs, buf)
+		b = buf.Bytes()
+		cache.Add(cacheKey, b)
+	}
+	w.Write(b)
 }
