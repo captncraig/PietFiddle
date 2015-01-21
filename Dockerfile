@@ -1,4 +1,4 @@
-from scratch
+from debian:jessie
 
 ADD editor /editor
 WORKDIR /editor
