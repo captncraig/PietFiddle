@@ -35,9 +35,7 @@ $(function(){
 	function init(){
 		canvas.width = cellSize * W;
 		canvas.height = cellSize * H;
-		console.log("start")
 		drawAll();
-		console.log("fin")
 	}
 	var ctx = canvas.getContext('2d');
 	function drawAll(){
@@ -49,7 +47,6 @@ $(function(){
 	}
 	function drawCell(x,y,updateNeighbor){
 		var color = programText[y*W + x];
-		console.log(x,y,color)
 		var px = x * cellSize;
 		var py = y *cellSize;
 		var tl = {x:x*cellSize,y:y*cellSize};
@@ -144,13 +141,17 @@ $(function(){
 	}
 	function mouseup(x,y,isRight){
 		editState.painting = false;
-		console.log("UP",x,y,isRight)
 		if(isRight){
 			editState.rightDown = false;
 			if (!editState.filled)
-				editState.selectedColor = programText[y*W + x];
+				selectColor(programText[y*W + x]);
 			editState.filled = false;
 		}
+	}
+	window.selectColor = function selectColor(color){
+		$("#currentColor").removeClass(editState.selectedColor)
+		editState.selectedColor = color;
+		$("#currentColor").addClass(color)
 	}
 	init();
 })
