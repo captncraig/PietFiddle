@@ -92,6 +92,7 @@ $(function(){
 	jCanvas.bind('mouseleave',function(){
 		currentX = currentY = -1;
 		editState.painting = false;
+		$("#size").text("");
 	});
 	jCanvas.bind('mouseenter',function(ev){
 		var x = Math.floor(ev.offsetX / cellSize);
@@ -117,21 +118,25 @@ $(function(){
 	function enterCell(x,y){
 		currentX = x;
 		currentY = y;
+		updateSize(x,y);
 		if(editState.painting){
-			setCell(x,y);
+			setCell(x,y,editState.selectedColor);
+			updateSize(x,y)
 		}
 	}
-	function setCell(x,y){
-		programText = programText.replaceAt(y*W + x, editState.selectedColor);
+	function setCell(x,y,color){
+		programText = programText.replaceAt(y*W + x, color);
 		drawCell(x,y,true);
 	}
 	function mousedown(x,y,isRight){
 		if(!isRight){
 			if(editState.rightDown){
 				editState.filled = true;
+				floodFill(x,y,editState.selectedColor)
+				updateSize(x,y)
 			}
 			else{
-				setCell(x,y);
+				setCell(x,y,editState.selectedColor);
 				editState.painting = true
 			}
 		}
@@ -139,6 +144,33 @@ $(function(){
 			editState.filled = false;
 			editState.rightDown = true;
 		}
+	}
+	function updateSize(x,y){
+		$("#size").text(floodFill(x,y))
+	}
+	function floodFill(x,y,set){
+		var marks = [];
+		var count = 0
+		var idx = x + y*W;
+		var stack = [];
+		stack.push(idx);
+		var targetColor = programText[idx];
+		while(stack.length){
+			var target = stack.pop();
+			if(marks[target] === true || programText[target] != targetColor) continue;
+			//not marked, color match
+			marks[target] = true;
+			count++
+			var tx = target % W;
+			var ty = Math.floor(target / W);
+			if(set) setCell(tx,ty,set);
+			if(tx > 0) stack.push((tx-1)+ty*W)
+			if(tx < W - 1) stack.push((tx+1)+ty*W)
+			if(ty > 0) stack.push(tx+(ty-1)*W)
+			if(ty < H - 1) stack.push(tx+(ty+1)*W)
+		}
+		console.log(count);
+		return count
 	}
 	function mouseup(x,y,isRight){
 		editState.painting = false;
