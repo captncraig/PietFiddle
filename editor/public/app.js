@@ -150,9 +150,29 @@ $(function(){
 		}
 	}
 	window.selectColor = function selectColor(color){
-		$("#currentColor").removeClass(editState.selectedColor)
+		var old = editState.selectedColor;
+		$("#currentColor").removeClass(old)
 		editState.selectedColor = color;
 		$("#currentColor").addClass(color)
+		$(".opcell").each(function( index ) {
+  			$(this).removeClass();
+  			$(this).addClass("opcell");
+			$(this).addClass("paletteCell");
+			$(this).addClass(rotate(color,Math.floor(index/3),index%3));
+		});
+	}
+	
+	window.rotateColor = function rotateColor(hue,lightness){
+		selectColor(rotate(editState.selectedColor,hue,lightness));
+	}
+	function rotate (src,hue,light){
+		if (src == "S" || src == "T")return src;
+		x="ABCDEFGHIJKLMNOPQRST"
+		idx = x.indexOf(src)
+		light = ((idx % 3) + light) % 3
+		hue = (Math.floor(idx / 3) + hue) % 6
+		console.log(hue,light)
+		return x[hue*3 + light]
 	}
 	init();
 })
