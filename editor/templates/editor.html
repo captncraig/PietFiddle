@@ -4,12 +4,20 @@
 <link rel="stylesheet" type="text/css" href="styles.css" />
 <script> W = {[{.Width}]}; H = {[{.Height}]}; DATA={[{.Data}]};</script>
 <script src="jquery.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 <script src="app.js"></script>
 </head>
 <body>
 
 <div class='sidebar'>
-<div class='palette'>
+	<div class='palette'>
 		<div class='selected A' id='currentColor' ></div>
 		<div class='paletteCell A' onclick="selectColor('A')"></div>
 		<div class='paletteCell B' onclick="selectColor('B')"></div>
@@ -50,15 +58,33 @@
 		<div class='paletteCell P opcell' onclick="rotateColor(5,0)">IN</div>
 		<div class='paletteCell Q opcell' onclick="rotateColor(5,1)">OUT#</div>
 		<div class='paletteCell R opcell' onclick="rotateColor(5,2)">OUT</div>
-		<div style='height:80px;line-height:80px; margin:15px;'>Current size:<span id='size'>0</span>
+		<div style='height:80px;line-height:80px; margin:15px;'>Current size:<span id='size'>0</span></div>
 	</div>
 </div>
 <div class='rightBar'>
-<a href='examples'>example programs</a>
+	<a href="/examples"><button type="button" class="btn btn-primary" >Examples</button></a>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Resize</button>
 </div>
 <canvas class='program' id='programCanvas'>
 </canvas>
 </div>
 <br/>
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">New Size</h4>
+      </div>
+      <div class="modal-body">
+        Width:<input type="text" class="form-control" id="in-w" value="{[{.Width}]}"/>
+        Height:<input type="text" class="form-control" id="in-h" value="{[{.Height}]}"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="resize()">Resize</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

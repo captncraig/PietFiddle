@@ -76,7 +76,7 @@ $(function(){
 	}
 	function line(a,b){
 		ctx.beginPath();
-		ctx.lineWidth = 1;
+		ctx.lineWidth = 2;
     	ctx.moveTo(a.x,a.y);
 		ctx.lineTo(b.x,b.y);
     	ctx.stroke();
@@ -169,7 +169,6 @@ $(function(){
 			if(ty > 0) stack.push(tx+(ty-1)*W)
 			if(ty < H - 1) stack.push(tx+(ty+1)*W)
 		}
-		console.log(count);
 		return count
 	}
 	function mouseup(x,y,isRight){
@@ -196,6 +195,21 @@ $(function(){
 	
 	window.rotateColor = function rotateColor(hue,lightness){
 		selectColor(rotate(editState.selectedColor,hue,lightness));
+	}
+	window.resize = function(){
+		newW = $('#in-w').val();
+		newH = $('#in-h').val();
+		newText = "";
+		for(var y = 0; y<newH; y++){
+			for(var x = 0; x<newW; x++){
+				if(y >= H || x >= W){newText += "T";}
+				else{newText += programText[y*W + x]}
+			}
+		}
+		W = newW;
+		H = newH;	
+		programText = newText;
+		init();
 	}
 	function rotate (src,hue,light){
 		if (src == "S" || src == "T")return src;
