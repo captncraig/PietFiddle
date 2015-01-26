@@ -1,10 +1,10 @@
 from debian:jessie
 
-ADD editor /editor
-WORKDIR /editor
+ADD website /website
+WORKDIR /website
 
 ENV PORT=3000
 
 EXPOSE 3000
 
-CMD /editor/app
+CMD /website/app
