@@ -30,7 +30,7 @@ $(function(){
 	pallette['S'] = "#FFFFFF";
 	pallette['T'] = "#000000";
 	
-	var cellSize = 25;
+	var cellSize = 20;
 	
 	function init(){
 		canvas.width = cellSize * W;
@@ -217,8 +217,62 @@ $(function(){
 		idx = x.indexOf(src)
 		light = ((idx % 3) + light) % 3
 		hue = (Math.floor(idx / 3) + hue) % 6
-		console.log(hue,light)
 		return x[hue*3 + light]
 	}
+	$("body").bind('keypress',function(ev){
+		switch(ev.keyCode){
+			case(112)://p-push
+				rotateColor(0,1);
+				return;
+			case(94)://^-pop
+				rotateColor(0,2);
+				return;
+			case(43)://+
+				rotateColor(1,0);
+				return;
+			case(45)://-
+				rotateColor(1,1);
+				return;
+			case(42)://*
+				rotateColor(1,2);
+				return;	
+			case(47):///
+				rotateColor(2,0);
+				return;
+			case(37)://%
+				rotateColor(2,1);
+				return;
+			case(33)://!
+				rotateColor(2,2);
+				return;
+			case(62)://> - greater
+				rotateColor(3,0);
+				return;
+			case(63)://? - pointer
+				rotateColor(3,1);
+				return;
+			case(124)://| - switch
+				rotateColor(3,2);
+				return;		
+			case(100)://d -dup
+				rotateColor(4,0);
+				return;
+			case(114)://r - roll
+				rotateColor(4,1);
+				return;
+			case(35)://# inN
+				rotateColor(4,2);
+				return;
+			case(105)://i - in
+				rotateColor(5,0);
+				return;
+			case(79)://O - outN
+				rotateColor(5,1);
+				return;
+			case(111)://o - out
+				rotateColor(5,2);
+				return;			
+		}
+	});
 	init();
 })
