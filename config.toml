@@ -1,0 +1,12 @@
+baseurl = "http://blog.pietfiddle.net"
+languageCode = "en-us"
+title = "PietFiddle Blog"
+
+[params]
+  Description = "'Why?' is the wrong question."
+  author = "Craig Peterson"
+
+[[menu.main]]
+    Name = "src"
+	Url = "http://github.com/captncraig/pietfiddle/tree/blog"
+    
