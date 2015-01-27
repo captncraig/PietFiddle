@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/captncraig/pietfiddle/images"
 	"github.com/go-martini/martini"
@@ -24,6 +25,7 @@ func main() {
 	m.Use(render.Renderer(render.Options{Extensions: []string{".tmpl", ".html"}, Delims: render.Delims{"{[{", "}]}"}}))
 	m.Get("/", serveIndex)
 	m.Get("/examples", serveExamples)
+	m.Post("/save", saveImg)
 	m.Get("/:id", serveImg)
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderImage)
 	m.Run()
@@ -32,6 +34,21 @@ func main() {
 func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render) {
 	dat := Image{Width: 10, Height: 10, Data: ""}
 	ren.HTML(200, "editor", dat)
+}
+func saveImg(w http.ResponseWriter, r *http.Request) {
+	img := Image{}
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&img)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	id, err := database.SaveImage(&img)
+	if err != nil {
+		w.WriteHeader(500)
+		return
+	}
+	w.Write([]byte(id))
 }
 
 func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render) {

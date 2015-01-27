@@ -219,6 +219,19 @@ $(function(){
 		hue = (Math.floor(idx / 3) + hue) % 6
 		return x[hue*3 + light]
 	}
+	window.save=function(){
+		$.ajax({
+			url:"/save",
+			data:JSON.stringify({Width:W,Height:H,Data:programText}),
+			type:"POST",
+			processData:false,
+			contentType:"application/json",
+			success:function(id){
+				console.log(id)
+				window.history.pushState("", "", '/'+id);
+			}
+		});
+	}
 	$("body").bind('keypress',function(ev){
 		switch(ev.keyCode){
 			case(112)://p-push
