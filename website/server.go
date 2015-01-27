@@ -41,11 +41,13 @@ func saveImg(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&img)
 	if err != nil {
 		w.WriteHeader(400)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	id, err := database.SaveImage(&img)
 	if err != nil {
 		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
 		return
 	}
 	w.Write([]byte(id))
