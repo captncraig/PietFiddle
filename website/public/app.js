@@ -197,8 +197,8 @@ $(function(){
 		selectColor(rotate(editState.selectedColor,hue,lightness));
 	}
 	window.resize = function(){
-		newW = $('#in-w').val();
-		newH = $('#in-h').val();
+		newW = +$('#in-w').val();
+		newH = +$('#in-h').val();
 		newText = "";
 		for(var y = 0; y<newH; y++){
 			for(var x = 0; x<newW; x++){
