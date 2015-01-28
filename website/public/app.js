@@ -231,6 +231,7 @@ $(function(){
 				console.log(id)
 				window.history.pushState("", "", '/'+id);
 				ViewModel.dirty(false);
+				ViewModel.id(id);
 			}
 		});
 	}

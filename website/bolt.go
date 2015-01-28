@@ -117,6 +117,7 @@ func (b *boltDb) GetExampleImages() []*Image {
 
 func (b *boltDb) SaveImage(i *Image) (string, error) {
 	id := randSeq(10)
+	i.Id = id
 	err := bdb.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("images"))
 		j, _ := json.Marshal(i)
@@ -143,6 +144,7 @@ func (b *boltDb) GetImage(id string) (*Image, error) {
 		}
 		return json.Unmarshal(v, &i)
 	})
+	i.Id = id
 	return &i, err
 
 }

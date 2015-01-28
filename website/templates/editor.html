@@ -3,7 +3,7 @@
 <head>
 <title>PietFiddle Online Piet Editor</title>
 <link rel="stylesheet" type="text/css" href="styles.css" />
-<script> W = {[{.Width}]}; H = {[{.Height}]}; DATA={[{.Data}]};</script>
+<script> W = {[{.Width}]}; H = {[{.Height}]}; DATA={[{.Data}]}; ID={[{.Id}]};</script>
 <script src="jquery.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
@@ -56,7 +56,10 @@
 		<div class='paletteCell P opcell' onclick="rotateColor(5,0)">IN</div>
 		<div class='paletteCell Q opcell' onclick="rotateColor(5,1)">OUT#</div>
 		<div class='paletteCell R opcell' onclick="rotateColor(5,2)">OUT</div>
-		<div style='height:80px;line-height:80px; margin:15px;'>Current size:<span data-bind="text: size">0</span></div>
+		<div style=''>Current size:<span data-bind="text: size">0</span></div>
+		<div style=''><a data-bind='visible: id, attr: {href: link}' target="sssssssss">image link</a></div>
+		<div style=''><a data-bind='visible: id, attr: {href: tinyLink}' target="sssssssss">minified image link</a></div>
+		
 	</div>
 </div>
 <div class='rightBar'>
