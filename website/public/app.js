@@ -127,6 +127,7 @@ $(function(){
 	function setCell(x,y,color){
 		programText = programText.replaceAt(y*W + x, color);
 		drawCell(x,y,true);
+		ViewModel.dirty(true);
 	}
 	function mousedown(x,y,isRight){
 		if(!isRight){
@@ -197,8 +198,8 @@ $(function(){
 		selectColor(rotate(editState.selectedColor,hue,lightness));
 	}
 	window.resize = function(){
-		newW = +$('#in-w').val();
-		newH = +$('#in-h').val();
+		newW = ViewModel.newW;
+		newH = ViewModel.newH;
 		newText = "";
 		for(var y = 0; y<newH; y++){
 			for(var x = 0; x<newW; x++){
@@ -229,6 +230,7 @@ $(function(){
 			success:function(id){
 				console.log(id)
 				window.history.pushState("", "", '/'+id);
+				ViewModel.dirty(false);
 			}
 		});
 	}

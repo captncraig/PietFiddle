@@ -62,7 +62,7 @@
 <div class='rightBar'>
 	<a href="/examples"><button type="button" class="btn btn-primary" >Examples</button></a>
 	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">Resize</button>
-	<button type="button" class="btn btn-primary" onclick="save()" >Save</button>
+	<button type="button" class="btn btn-primary" data-bind="enable: dirty" onclick="save()" >Save</button>
 </div>
 <canvas class='program' id='programCanvas'>
 </canvas>
@@ -76,8 +76,8 @@
         <h4 class="modal-title" id="myModalLabel">New Size</h4>
       </div>
       <div class="modal-body">
-        Width:<input type="text" class="form-control" id="in-w" value="{[{.Width}]}"/>
-        Height:<input type="text" class="form-control" id="in-h" value="{[{.Height}]}"/>
+        Width:<input type="text" class="form-control" data-bind="value: newW" />
+        Height:<input type="text" class="form-control" data-bind="value: newH"/>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="resize()">Resize</button>
