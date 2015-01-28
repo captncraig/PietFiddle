@@ -198,8 +198,8 @@ $(function(){
 		selectColor(rotate(editState.selectedColor,hue,lightness));
 	}
 	window.resize = function(){
-		newW = ViewModel.newW();
-		newH = ViewModel.newH();
+		newW = +ViewModel.newW();
+		newH = +ViewModel.newH();
 		
 		newText = "";
 		for(var y = 0; y<newH; y++){
