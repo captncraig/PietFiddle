@@ -92,6 +92,8 @@ $(function(){
 	jCanvas.bind('mouseleave',function(){
 		currentX = currentY = -1;
 		editState.painting = false;
+		editState.rightDown = false;
+		editState.filled = false;
 		ViewModel.size(0);
 	});
 	jCanvas.bind('mouseenter',function(ev){
