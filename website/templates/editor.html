@@ -8,7 +8,8 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-
+<script src="ko.js"></script>
+<script src="viewModel.js"></script>
 <script src="app.js"></script>
 </head>
 <body>
@@ -55,7 +56,7 @@
 		<div class='paletteCell P opcell' onclick="rotateColor(5,0)">IN</div>
 		<div class='paletteCell Q opcell' onclick="rotateColor(5,1)">OUT#</div>
 		<div class='paletteCell R opcell' onclick="rotateColor(5,2)">OUT</div>
-		<div style='height:80px;line-height:80px; margin:15px;'>Current size:<span id='size'>0</span></div>
+		<div style='height:80px;line-height:80px; margin:15px;'>Current size:<span data-bind="text: size">0</span></div>
 	</div>
 </div>
 <div class='rightBar'>

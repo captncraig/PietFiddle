@@ -6,7 +6,7 @@ $(function(){
 	var canvas = jCanvas[0];
 	var programText = DATA;
 	while(programText.length < W*H){
-		programText += "A";
+		programText += "B";
 	}
 	var pallette = [];
 	pallette['A'] = "#FFC0C0";
@@ -92,7 +92,7 @@ $(function(){
 	jCanvas.bind('mouseleave',function(){
 		currentX = currentY = -1;
 		editState.painting = false;
-		$("#size").text("");
+		ViewModel.size(0);
 	});
 	jCanvas.bind('mouseenter',function(ev){
 		var x = Math.floor(ev.offsetX / cellSize);
@@ -146,7 +146,7 @@ $(function(){
 		}
 	}
 	function updateSize(x,y){
-		$("#size").text(floodFill(x,y))
+		ViewModel.size(floodFill(x,y))
 	}
 	function floodFill(x,y,set){
 		var marks = [];
