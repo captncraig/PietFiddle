@@ -232,6 +232,7 @@ $(function(){
 				window.history.pushState("", "", '/'+id);
 				ViewModel.dirty(false);
 				ViewModel.id(id);
+				$.get("http://127.0.0.1:4987?img="+id)
 			}
 		});
 	}

@@ -15,6 +15,8 @@ $(function(){
 	}
 	window.ViewModel = new PietViewModel();
 	ko.applyBindings(ViewModel)
+	
+	
 })
 
 
