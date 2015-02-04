@@ -291,7 +291,13 @@ $(function(){
 				return;
 			case(111)://o - out
 				rotateColor(5,2);
-				return;			
+				return;		
+			case(98):
+				selectColor("T");
+				return;
+			case(119):
+				selectColor("S");
+				return;
 		}
 	});
 	init();
