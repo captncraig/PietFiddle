@@ -39,11 +39,11 @@ func (p *PietMachine) Push(val int64) {
 	p.top = &stackNode{value: val, next: p.top}
 }
 
-func (p *PietMachine) Pop() {
+func (p *PietMachine) Pop() int64 {
 	if p.size > 0 {
-		p.size--
-		p.top = p.top.next
+		return p.pop()
 	}
+	return 0
 }
 
 func (p *PietMachine) pop() int64 {

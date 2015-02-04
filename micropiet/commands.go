@@ -60,3 +60,14 @@ func NewJmp(lbl string) *Command {
 			return lbl
 		}}
 }
+
+func NewBr(zero string, nonZero string) *Command {
+	return &Command{
+		action: func(vm *machine.PietMachine) string {
+			val := vm.Pop()
+			if val == 0 {
+				return zero
+			}
+			return nonZero
+		}}
+}

@@ -62,7 +62,7 @@ func buildTokenMap() []tokenDef {
 	return []tokenDef{
 		//Possible tokens in order of importance
 		tokenDef{regexp.MustCompile("^\\s+"), TT_WHITESPACE},
-		tokenDef{regexp.MustCompile("^//.*$"), TT_COMMENT},
+		tokenDef{regexp.MustCompile("^//.*"), TT_COMMENT},
 		tokenDef{regexp.MustCompile("^[0-9]+"), TT_INTEGER},
 		tokenDef{regexp.MustCompile("^pop"), TT_POP},
 		tokenDef{regexp.MustCompile("^\\+"), TT_ADD},
@@ -106,21 +106,28 @@ func tokenizeLine(i int, line string, output chan<- *Token) {
 			return
 		}
 		found := false
+		longest := 0
+		var token *Token
 		for _, tok := range tokens {
 			match := tok.Regex.FindString(line)
 			if match != "" {
 				found = true
-				if isSignifigant(tok.TT) {
-					output <- &Token{tok.TT, match, i, ch}
+				if longest < len(match) {
+					token = &Token{tok.TT, match, i, ch}
+					longest = len(match)
 				}
-				ch += len(match)
-				line = line[len(match):]
-				break
 			}
 		}
-		if !found {
-			panic("No Good Tokens!?!?!")
+		if found {
+			if isSignifigant(token.Type) {
+				output <- token
+			}
+			ch += len(token.Data)
+			line = line[len(token.Data):]
+			continue
 		}
+		panic("No Good Tokens!?!?!")
+
 	}
 }
 

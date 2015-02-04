@@ -1,5 +1,9 @@
 package micropiet
 
+import (
+	"fmt"
+)
+
 type parser struct {
 	toks <-chan *Token
 }
@@ -19,7 +23,7 @@ func (p *parser) startMacroReplacement(macros map[string][]*Token) chan struct{}
 func (p *parser) expect(typ TokenType) *Token {
 	t := p.next()
 	if t.Type != typ {
-		panic("Unexpected token")
+		panic(fmt.Sprintf("Unexpected token %s %d %d %s", t.Type.String(), t.line, t.col, t.Data))
 	}
 	return t
 }
@@ -75,6 +79,8 @@ func Parse(text string, macros map[string][]*Token) (*Program, map[string][]*Tok
 			prog.AddCommand(NewJmp(p.expect(TT_IDENTIFIER).Data))
 		case TT_LABEL:
 			prog.Mark(currentToken.Data)
+		case TT_BRANCH:
+			prog.AddCommand(NewBr(p.expect(TT_IDENTIFIER).Data, p.expect(TT_IDENTIFIER).Data))
 		default:
 			panic("Unexpected token received: " + currentToken.Type.String())
 		}

@@ -28,6 +28,7 @@ func (p *Program) Run(vm *machine.PietMachine) {
 		if jmp == "" {
 			cur = cur.next
 		} else {
+			//TODO: Check that label exists.
 			cur = p.labels[jmp]
 		}
 	}
