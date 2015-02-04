@@ -1,6 +1,7 @@
 package images
 
 import (
+	"errors"
 	"fmt"
 	"github.com/lucasb-eyer/go-colorful"
 	"image"
@@ -40,14 +41,17 @@ func buildPalette() color.Palette {
 	return color.Palette(p)
 }
 
-func LoadImage(input io.Reader, codelSize int) (width int, height int, data string) {
-	i, _, _ := image.Decode(input)
+func LoadImage(input io.Reader, codelSize int) (width int, height int, data string, err error) {
+	i, _, err := image.Decode(input)
+	if err != nil {
+		return 0, 0, "", err
+	}
 
 	width = i.Bounds().Max.X
 	height = i.Bounds().Max.Y
 
 	if width%codelSize != 0 || height%codelSize != 0 {
-		fmt.Println("Codel Size MISMATCH!!")
+		return 0, 0, "", errors.New("codel size mismatch")
 	}
 	width /= codelSize
 	height /= codelSize
@@ -63,5 +67,5 @@ func LoadImage(input io.Reader, codelSize int) (width int, height int, data stri
 		}
 	}
 	fmt.Println(string(b))
-	return width, height, string(b)
+	return width, height, string(b), nil
 }

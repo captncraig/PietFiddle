@@ -62,7 +62,7 @@ func init() {
 		if err != nil || resp.StatusCode != 200 {
 			log.Println("Error getting example images.", err, resp)
 		}
-		w, h, d := images.LoadImage(resp.Body, 1)
+		w, h, d, _ := images.LoadImage(resp.Body, 1)
 		image := Image{
 			Id:     "~" + img.Id,
 			Width:  w,

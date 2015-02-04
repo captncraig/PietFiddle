@@ -27,7 +27,9 @@ func main() {
 	m.Get("/", serveIndex)
 	m.Get("/examples", serveExamples)
 	m.Post("/save", saveImg)
+	m.Get("/import", importImg)
 	m.Get("/:id", serveImg)
+
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderPng)
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).gif", renderGif)
 	m.Run()
@@ -37,6 +39,34 @@ func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render) {
 	dat := Image{Width: 10, Height: 10, Data: ""}
 	ren.HTML(200, "editor", dat)
 }
+func importImg(w http.ResponseWriter, r *http.Request) {
+	url := r.URL.Query().Get("url")
+	resp, err := http.Get(url)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	wid, h, d, err := images.LoadImage(resp.Body, 1)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	fmt.Println(wid, h, d)
+	i := Image{}
+	i.Data = d
+	i.Width = wid
+	i.Height = h
+	id, err := database.SaveImage(&i)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	http.Redirect(w, r, "/"+id, 302)
+}
+
 func saveImg(w http.ResponseWriter, r *http.Request) {
 	img := Image{}
 	decoder := json.NewDecoder(r.Body)
