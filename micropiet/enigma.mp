@@ -44,6 +44,15 @@ settings:
 	n 65 - 4 1 2 - r + 26 %
 	// R' M' L'
 
+26
+initPlugs:
+d br readPlugs addPlug
+1 - d
+jmp initPlugs
+
+readPlugs:
+
+
 
 
 

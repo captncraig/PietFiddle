@@ -82,6 +82,10 @@ func init() {
 	}
 	err = bdb.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte("images"))
+		if err != nil {
+			log.Fatal(err)
+		}
+		_, err = tx.CreateBucketIfNotExists([]byte("tokens"))
 		return err
 	})
 	if err != nil {
@@ -93,6 +97,7 @@ type Database interface {
 	GetExampleImages() []*Image
 	GetImage(id string) (*Image, error)
 	SaveImage(i *Image) (string, error)
+	GetUserId(token string) string
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
@@ -147,4 +152,19 @@ func (b *boltDb) GetImage(id string) (*Image, error) {
 	i.Id = id
 	return &i, err
 
+}
+
+func (b *boltDb) GetUserId(token string) string {
+	s := []byte{}
+	bdb.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("tokens"))
+		v := b.Get([]byte(token))
+		if v == nil {
+			return nil
+		}
+		s = make([]byte, len(v))
+		copy(s, v)
+		return nil
+	})
+	return string(s)
 }

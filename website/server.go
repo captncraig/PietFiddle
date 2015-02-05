@@ -21,6 +21,8 @@ func init() {
 	cache, _ = lru.New(2000)
 }
 
+type userId string
+
 func main() {
 	m := martini.Classic()
 	m.Use(render.Renderer(render.Options{Extensions: []string{".tmpl", ".html"}, Delims: render.Delims{"{[{", "}]}"}}))
@@ -32,10 +34,26 @@ func main() {
 
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderPng)
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).gif", renderGif)
+
+	m.Use(func(r *http.Request, c martini.Context) {
+		a := userId("")
+		if cookie, err := r.Cookie("pf-auth"); err == nil {
+			if v := cookie.Value; v != "" {
+				id := database.GetUserId(v)
+				if id != "" {
+					a = userId(id)
+				}
+			}
+		}
+		c.Map(a)
+		c.Next()
+	})
+
 	m.Run()
 }
 
-func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render) {
+func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render, uid userId) {
+	fmt.Println("u", uid)
 	dat := Image{Width: 10, Height: 10, Data: ""}
 	ren.HTML(200, "editor", dat)
 }
@@ -66,7 +84,6 @@ func importImg(w http.ResponseWriter, r *http.Request) {
 	}
 	http.Redirect(w, r, "/"+id, 302)
 }
-
 func saveImg(w http.ResponseWriter, r *http.Request) {
 	img := Image{}
 	decoder := json.NewDecoder(r.Body)
@@ -84,7 +101,6 @@ func saveImg(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write([]byte(id))
 }
-
 func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render) {
 	id := params["id"]
 	img, err := database.GetImage(id)
@@ -95,7 +111,6 @@ func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render) {
 	}
 	ren.HTML(200, "editor", img)
 }
-
 func serveExamples(ren render.Render) {
 	ren.HTML(200, "examples", database.GetExampleImages())
 }
