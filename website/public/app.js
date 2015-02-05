@@ -129,6 +129,7 @@ $(function(){
 	function setCell(x,y,color){
 		programText = programText.replaceAt(y*W + x, color);
 		drawCell(x,y,true);
+		updateSize(x,y);
 		ViewModel.dirty(true);
 	}
 	function mousedown(x,y,isRight){

@@ -35,6 +35,7 @@ func main() {
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderPng)
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).gif", renderGif)
 
+	//decode user token and make it available to any handler that asks for a userId.
 	m.Use(func(r *http.Request, c martini.Context) {
 		a := userId("")
 		if cookie, err := r.Cookie("pf-auth"); err == nil {
@@ -52,10 +53,42 @@ func main() {
 	m.Run()
 }
 
+type BrowserData struct {
+	Img *Image
+	Uid userId
+}
+
 func serveIndex(w http.ResponseWriter, r *http.Request, ren render.Render, uid userId) {
 	fmt.Println("u", uid)
-	dat := Image{Width: 10, Height: 10, Data: ""}
-	ren.HTML(200, "editor", dat)
+	img := Image{Width: 10, Height: 10, Data: ""}
+	ren.HTML(200, "editor", BrowserData{&img, uid})
+}
+func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render, uid userId) {
+	id := params["id"]
+	img, err := database.GetImage(id)
+	if err != nil {
+		w.WriteHeader(404)
+		fmt.Println(err)
+		return
+	}
+	ren.HTML(200, "editor", BrowserData{img, uid})
+}
+func saveImg(w http.ResponseWriter, r *http.Request) {
+	img := Image{}
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&img)
+	if err != nil {
+		w.WriteHeader(400)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	id, err := database.SaveImage(&img)
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.Write([]byte(id))
 }
 func importImg(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Query().Get("url")
@@ -83,33 +116,6 @@ func importImg(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/"+id, 302)
-}
-func saveImg(w http.ResponseWriter, r *http.Request) {
-	img := Image{}
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&img)
-	if err != nil {
-		w.WriteHeader(400)
-		w.Write([]byte(err.Error()))
-		return
-	}
-	id, err := database.SaveImage(&img)
-	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
-		return
-	}
-	w.Write([]byte(id))
-}
-func serveImg(w http.ResponseWriter, params martini.Params, ren render.Render) {
-	id := params["id"]
-	img, err := database.GetImage(id)
-	if err != nil {
-		w.WriteHeader(404)
-		fmt.Println(err)
-		return
-	}
-	ren.HTML(200, "editor", img)
 }
 func serveExamples(ren render.Render) {
 	ren.HTML(200, "examples", database.GetExampleImages())

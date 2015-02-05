@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/captncraig/pietfiddle/images"
+	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -80,17 +81,18 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = bdb.Update(func(tx *bolt.Tx) error {
-		_, err := tx.CreateBucketIfNotExists([]byte("images"))
-		if err != nil {
+	bdb.Update(func(tx *bolt.Tx) error {
+		if _, err := tx.CreateBucketIfNotExists([]byte("images")); err != nil {
 			log.Fatal(err)
 		}
-		_, err = tx.CreateBucketIfNotExists([]byte("tokens"))
-		return err
+		if _, err := tx.CreateBucketIfNotExists([]byte("users")); err != nil {
+			log.Fatal(err)
+		}
+		if _, err := tx.CreateBucketIfNotExists([]byte("tokens")); err != nil {
+			log.Fatal(err)
+		}
+		return nil
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
 }
 
 type Database interface {
@@ -98,6 +100,8 @@ type Database interface {
 	GetImage(id string) (*Image, error)
 	SaveImage(i *Image) (string, error)
 	GetUserId(token string) string
+	LoginUser(username, pw string) string
+	CreateUser(username, pw, email string) error
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
@@ -141,30 +145,64 @@ func (b *boltDb) GetImage(id string) (*Image, error) {
 		}
 	}
 	i := Image{}
-	err := bdb.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("images"))
-		v := b.Get([]byte(id))
-		if v == nil {
-			return errors.New("Not found")
-		}
-		return json.Unmarshal(v, &i)
-	})
+	err := b.getJson("images", id, &i)
 	i.Id = id
 	return &i, err
-
 }
 
 func (b *boltDb) GetUserId(token string) string {
-	s := []byte{}
-	bdb.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket([]byte("tokens"))
-		v := b.Get([]byte(token))
+	dat := struct{ id string }{}
+	err := b.getJson("tokens", token, &dat)
+	if err != nil {
+		return ""
+	}
+	return dat.id
+}
+
+func (b *boltDb) CreateUser(username, pw, email string) error {
+	pwh, err := bcrypt.GenerateFromPassword([]byte(pw), 11)
+	if err != nil {
+		return err
+	}
+	pw = string(pwh)
+	u := User{}
+	err = b.getJson("users", username, &u)
+	if err == nil {
+		return errors.New("User already exists")
+	} else if err.Error() != "Not found" {
+		return err
+	}
+	//save
+	u.Username = username
+	u.Hash = pw
+	u.Email = email
+	return nil
+}
+
+type User struct {
+	Username, Email, Hash string
+}
+
+func (b *boltDb) LoginUser(username, pw string) string {
+	u := User{}
+	err := b.getJson("users", username, &u)
+	if err != nil {
+		return ""
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(u.Hash), []byte(pw))
+	if err != nil {
+		return ""
+	}
+	return username
+}
+
+func (b *boltDb) getJson(bucket, key string, dat interface{}) error {
+	return bdb.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(bucket))
+		v := b.Get([]byte(key))
 		if v == nil {
-			return nil
+			return errors.New("Not found")
 		}
-		s = make([]byte, len(v))
-		copy(s, v)
-		return nil
+		return json.Unmarshal(v, dat)
 	})
-	return string(s)
 }
