@@ -1,6 +1,7 @@
 package images
 
 import (
+	"github.com/spakin/netpbm"
 	"image"
 	"image/gif"
 	"image/png"
@@ -22,6 +23,11 @@ func BuildGif(w, h int, data string, codelSize int, writer io.Writer) {
 		g.Delay[i] = 12
 	}
 	gif.EncodeAll(writer, &g)
+}
+
+func BuildPpm(w, h int, data string, codelSize, rotation int, writer io.Writer) {
+	img := makeImage(w, h, data, codelSize, rotation)
+	netpbm.Encode(writer, img, &netpbm.EncodeOptions{Format: netpbm.PPM})
 }
 
 func makeImage(w, h int, data string, codelSize, rotation int) *image.Paletted {

@@ -1,13 +1,21 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 )
 
+var ppm = flag.Bool("ppm", false, "Download ppms instead of pngs.")
+
 func main() {
+	flag.Parse()
+	fmt := "png"
+	if *ppm {
+		fmt := "p6"
+	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if origin := r.Header.Get("Origin"); origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
@@ -17,7 +25,7 @@ func main() {
 		}
 		if id := r.URL.Query().Get("img"); id != "" {
 			fmt.Printf("Save detected for %s. Downloading...\n", id)
-			url := "http://www.pietfiddle.net/img/" + id + ".png?cs=1"
+			url := "http://www.pietfiddle.net/img/" + id + fmt + "?cs=1"
 			resp, err := http.Get(url)
 			if err != nil {
 				fmt.Printf("Error downloading! %v", err.Error())

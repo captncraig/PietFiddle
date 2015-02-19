@@ -34,6 +34,7 @@ func main() {
 
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).png", renderPng)
 	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).gif", renderGif)
+	m.Get("/img/(?P<id>~?[a-zA-Z0-9]+).ppm", renderPpm)
 
 	//decode user token and make it available to any handler that asks for a userId.
 	m.Use(func(r *http.Request, c martini.Context) {
@@ -121,10 +122,13 @@ func serveExamples(ren render.Render) {
 	ren.HTML(200, "examples", database.GetExampleImages())
 }
 func renderGif(w http.ResponseWriter, r *http.Request, params martini.Params) {
-	renderImage(w, r, params, "G")
+	renderImage(w, r, params, "gif")
 }
 func renderPng(w http.ResponseWriter, r *http.Request, params martini.Params) {
-	renderImage(w, r, params, "P")
+	renderImage(w, r, params, "png")
+}
+func renderPpm(w http.ResponseWriter, r *http.Request, params martini.Params) {
+	renderImage(w, r, params, "ppm")
 }
 func renderImage(w http.ResponseWriter, r *http.Request, params martini.Params, format string) {
 	id := params["id"]
@@ -145,12 +149,15 @@ func renderImage(w http.ResponseWriter, r *http.Request, params martini.Params, 
 		b = data.([]byte)
 	} else {
 		buf := bytes.NewBuffer(nil)
-		if format == "G" {
+		if format == "gif" {
 			w.Header().Add("Content-Type", "image/gif")
 			images.BuildGif(img.Width, img.Height, img.Data, cs, buf)
-		} else {
+		} else if format == "png" {
 			w.Header().Add("Content-Type", "image/png")
 			images.BuildImage(img.Width, img.Height, img.Data, cs, rotate, buf)
+		} else if format == "ppm" {
+			w.Header().Add("Content-Type", "image/ppm")
+			images.BuildPpm(img.Width, img.Height, img.Data, cs, rotate, buf)
 		}
 		b = buf.Bytes()
 		cache.Add(cacheKey, b)
