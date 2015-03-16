@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/boltdb/bolt"
-	"github.com/captncraig/pietfiddle/images"
-	"golang.org/x/crypto/bcrypt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -14,6 +11,10 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/boltdb/bolt"
+	"github.com/captncraig/pietfiddle/images"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Image struct {
@@ -21,6 +22,7 @@ type Image struct {
 	Name          string
 	Width, Height int
 	Data          string
+	Parent        string
 }
 
 var examples []*Image

@@ -27,7 +27,11 @@ func BuildGif(w, h int, data string, codelSize int, writer io.Writer) {
 
 func BuildPpm(w, h int, data string, codelSize, rotation int, writer io.Writer) {
 	img := makeImage(w, h, data, codelSize, rotation)
-	netpbm.Encode(writer, img, &netpbm.EncodeOptions{Format: netpbm.PPM})
+	netpbm.Encode(writer, img, &netpbm.EncodeOptions{
+		Format:   netpbm.PPM,
+		MaxValue: 255,
+		//Plain:    true,
+	})
 }
 
 func makeImage(w, h int, data string, codelSize, rotation int) *image.Paletted {

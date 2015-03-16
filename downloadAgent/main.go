@@ -9,12 +9,13 @@ import (
 )
 
 var ppm = flag.Bool("ppm", false, "Download ppms instead of pngs.")
+var host = flag.String("host", "http://pietfiddle.net", "Host to download from.")
 
 func main() {
 	flag.Parse()
-	fmt := "png"
+	format := ".png"
 	if *ppm {
-		fmt := "p6"
+		format = ".ppm"
 	}
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if origin := r.Header.Get("Origin"); origin != "" {
@@ -25,7 +26,7 @@ func main() {
 		}
 		if id := r.URL.Query().Get("img"); id != "" {
 			fmt.Printf("Save detected for %s. Downloading...\n", id)
-			url := "http://www.pietfiddle.net/img/" + id + fmt + "?cs=1"
+			url := *host + "/img/" + id + format + "?cs=1"
 			resp, err := http.Get(url)
 			if err != nil {
 				fmt.Printf("Error downloading! %v", err.Error())
@@ -35,7 +36,7 @@ func main() {
 				fmt.Printf("Bad status code: %d", resp.StatusCode)
 				return
 			}
-			file, err := os.Create("work.png")
+			file, err := os.Create("work" + format)
 			defer file.Close()
 			if err != nil {
 				fmt.Printf("Error opening file! %v", err.Error())

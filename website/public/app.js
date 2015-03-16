@@ -227,7 +227,7 @@ $(function(){
 	window.save=function(){
 		$.ajax({
 			url:"/save",
-			data:JSON.stringify({Width:W,Height:H,Data:programText}),
+			data:JSON.stringify({Width:W,Height:H,Data:programText,Parent:ViewModel.id()}),
 			type:"POST",
 			processData:false,
 			contentType:"application/json",
